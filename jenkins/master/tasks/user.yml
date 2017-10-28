@@ -1,0 +1,49 @@
+---
+- name: Creates directory
+  file:
+    path: /var/lib/jenkins/.ssh
+    state: directory
+
+- name: ssh private key
+  copy:
+    content: "{{ jenkins.ssh_priv }}"
+    dest: /var/lib/jenkins/.ssh/id_rsa
+    owner: jenkins
+    group: jenkins
+    mode: 0600
+
+- name: ssh public key
+  copy:
+    content: "{{ jenkins.ssh_pub }}"
+    dest: /var/lib/jenkins/.ssh/id_rsa.pub
+    owner: jenkins
+    group: jenkins
+    mode: 0600
+
+- name: test if init password exist
+  stat:
+    path: /var/lib/jenkins/secrets/initialAdminPassword
+  register: init_password
+
+- name: copy Groovy script for admin account
+  template:
+    src: user.groovy.j2
+    dest: /tmp/user.groovy
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Update Admin account
+  shell: "{{ jenkins_cli_cmd }} groovy /tmp/user.groovy"
+  when: init_password.stat.exists == False
+
+- name: Create Admin account
+  shell: "{{ jenkins_init_cli_cmd }} groovy /tmp/user.groovy"
+  when: init_password.stat.exists == True
+
+- file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/user.groovy
+    - /var/lib/jenkins/secrets/initialAdminPassword

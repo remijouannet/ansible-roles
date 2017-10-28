@@ -1,0 +1,49 @@
+---
+- name: Ensure deps are installed
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - make
+
+- name: Import docker key
+  rpm_key:
+    key: https://download.docker.com/linux/centos/gpg
+    state: present
+    validate_certs: no
+
+- name: Get docker repo for ansible
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Ensure docker-ce are installed
+  yum:
+    name: docker-ce
+    state: installed
+    update_cache: yes
+
+- name: Ensure docker is started and enabled on boot.
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- group:
+    name: docker
+    state: present
+
+- name: Copy docker configuration
+  template:
+    src: "{{ docker.configuration_template | default('daemon.json.j2') }}"
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0600
+  notify:
+    - restart docker
+
+

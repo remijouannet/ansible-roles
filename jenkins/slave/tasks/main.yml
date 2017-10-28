@@ -1,0 +1,47 @@
+---
+
+- name: Install RedHat dependencies
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ jenkins.dependencies }}"
+
+- group:
+    name: jenkins
+    state: present
+
+- user:
+    name: jenkins
+    shell: /bin/bash
+    groups: docker,jenkins
+    append: yes
+
+- name: Set authorized key took from file
+  authorized_key:
+    user: jenkins
+    state: present
+    key: "{{ jenkins.ssh_pub }}"
+
+- name: Creates directory
+  file:
+    path: /var/lib/jenkins
+    owner: jenkins
+    group: jenkins
+    mode: 0700
+    state: directory
+
+- name: Creates directory
+  file:
+    path: /opt/jenkins
+    owner: jenkins
+    group: jenkins
+    mode: 0500
+    state: directory
+
+- name: Get Jenkins CLI
+  get_url:
+    url: "{{ jenkins.url }}jnlpJars/slave.jar"
+    dest: /opt/jenkins/slave.jar
+    owner: jenkins
+    group: jenkins
+    mode: 0440

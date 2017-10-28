@@ -1,0 +1,2 @@
+static_dir: /home/remi/flask-helloworld/static/
+proxy_pass: http://127.0.0.1:5000

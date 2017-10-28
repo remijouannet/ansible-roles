@@ -1,0 +1,26 @@
+port 1194
+
+proto udp
+
+dev tap
+
+ca ssl/ca.crt
+cert ssl/server.crt
+key ssl/server.key
+dh ssl/dh.pem
+
+server 10.10.0.0 255.255.255.0
+
+keepalive 10 120
+
+comp-lzo
+
+user openvpn
+group openvpn
+
+persist-key
+persist-tun
+
+duplicate-cn
+
+verb 3

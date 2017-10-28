@@ -1,0 +1,65 @@
+---
+- name: Import grafana key
+  rpm_key:
+    key: https://packagecloud.io/gpg.key
+    state: present
+    validate_certs: no
+
+- name: Import grafana key
+  rpm_key:
+    key: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    state: present
+    validate_certs: no
+
+- name: Get grafana repo for ansible
+  yum_repository:
+    name: grafana
+    description: grafana
+    baseurl: https://packagecloud.io/grafana/stable/el/$releasever/$basearch
+
+- name: Install RedHat dependencies
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ grafana.dependencies }}"
+
+- name: Install grafana for RedHat
+  yum:
+    name: grafana
+    state: latest
+
+- name: Create grafana.ini
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+  notify:
+    - restart_grafana
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: grafana
+    group: grafana
+    recurse: yes
+    mode: 0755
+  with_items:
+    - /var/lib/grafana/dashboards
+
+
+- name: Copy prometheus configuration
+  copy:
+    src: "{{ grafana.dashboards_template }}"
+    dest: /var/lib/grafana/dashboards/
+    owner: grafana
+    group: grafana
+    directory_mode: yes
+  when: grafana.dashboards_template is defined
+
+- name: Ensure grafana is running and starting on boot
+  service:
+    name: grafana-server
+    state: started
+    enabled: yes
+
+- import_tasks: prometheus.yml

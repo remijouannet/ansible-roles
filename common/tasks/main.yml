@@ -1,0 +1,56 @@
+---
+
+- name: upgrade all packages
+  yum:
+    name: '*'
+    update_cache: yes
+    state: latest
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: Update all packages to the latest version
+  apt:
+    upgrade: yes
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: Install common tools
+  apt: 
+    name: "{{ item }}" 
+    state: latest 
+    update_cache: yes
+  with_items:
+    - lsof
+    - man
+    - iotop
+    - stress
+    - git
+    - vim
+    - gcc
+    - htop
+    - tcpdump
+    - strace
+    - nmap
+    - apt-transport-https
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: Install common tools
+  yum: 
+    name: "{{ item }}" 
+    state: latest 
+    update_cache: yes
+  with_items:
+    - git
+    - vim
+    - gcc
+    - htop
+    - tcpdump
+    - strace
+    - nmap
+    - lsof
+    - man
+    - iotop
+    - stress
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: set hostname
+  hostname:
+    name: "{{ inventory_hostname}}"

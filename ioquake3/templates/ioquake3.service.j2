@@ -1,0 +1,16 @@
+[Unit]
+Description=ioquake3 server
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=ioq3srv
+Group=ioq3srv
+ExecStart=/opt/ioquake3/ioq3ded.x86_64 +exec autoexec.cfg
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target

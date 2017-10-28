@@ -1,0 +1,20 @@
+import jenkins.model.*
+import hudson.model.Node.Mode
+import hudson.slaves.*
+import hudson.plugins.sshslaves.*
+import java.util.ArrayList;
+import hudson.slaves.EnvironmentVariablesNodeProperty.Entry;
+
+{% for slave in jenkins_slaves %}
+
+ComputerLauncher cmd{{ loop.index }} = new CommandLauncher('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -v jenkins@{{ slave['target'] }} java -jar /opt/jenkins/slave.jar')
+
+DumbSlave dumb{{ loop.index }} = new DumbSlave("{{ slave['name'] }}","/var/lib/jenkins", cmd{{ loop.index }})
+
+dumb{{ loop.index }}.setMode(Mode.EXCLUSIVE)
+dumb{{ loop.index }}.setLabelString("{{ slave['labels'] }}")
+dumb{{ loop.index }}.setNumExecutors({{ slave['executors'] }})
+dumb{{ loop.index }}.setRetentionStrategy(RetentionStrategy.INSTANCE)
+
+Jenkins.instance.addNode(dumb{{ loop.index }})
+{% endfor %}

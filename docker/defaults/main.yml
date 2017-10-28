@@ -1,0 +1,2 @@
+docker:
+  configuration_template: daemon.json.j2

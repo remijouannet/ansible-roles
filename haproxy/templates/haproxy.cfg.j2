@@ -1,0 +1,41 @@
+global
+  log /dev/log  local0 notice
+  tune.ssl.default-dh-param 2048
+  stats socket /var/lib/haproxy/stats level admin
+
+defaults
+  log global
+  mode tcp
+
+frontend frontend_80
+    bind *:80
+    mode http
+{% for frontend in haproxy_frontend_80 %}
+    acl host_{{ frontend.name }} hdr(host) -i {{ frontend.hostname }}
+    use_backend {{ frontend.name }} if host_{{ frontend.name }}
+{% endfor %}
+{% for frontend in haproxy_frontend_443 %}
+    redirect scheme https if { hdr(Host) -i {{ frontend.hostname }} } !{ ssl_fc }
+{% endfor %}
+
+frontend frontend_443
+    bind *:443 ssl crt /etc/haproxy/ssl/
+    option http-server-close
+    mode http
+{% for frontend in haproxy_frontend_443 %}
+    acl host_{{ frontend.name }} hdr(host) -i {{ frontend.hostname }}
+    use_backend {{ frontend.name }} if host_{{ frontend.name }}
+{% endfor %}
+
+{% for backend in haproxy_backend %}
+backend {{ backend.name }}
+    mode {{ backend.mode }}
+    balance {{ backend.balance }}
+    option forwardfor
+    cookie SERVERID insert indirect
+    {% for server in backend.backend_servers %}
+    server {{ server.name }} {{ server.address }}:{{ server.port}} cookie {{ server.name }} check
+    {% endfor %}
+{% endfor %}
+
+{{ haproxy_custom }}

@@ -1,0 +1,12 @@
+- name: install redis
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - redis-server
+    - redis-tools
+
+- name: service redis
+  service:
+    name: redis-server
+    state: started

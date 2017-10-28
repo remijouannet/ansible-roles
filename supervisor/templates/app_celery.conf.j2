@@ -1,0 +1,6 @@
+[program:{{ app_celery_program }}]
+process_name=%(program_name)s_%(process_num)s
+command={{ app_celery_command }}
+user={{ app_celery_user }} 
+directory={{ app_celery_cwd }}
+numprocs={{ app_celery_numprocs }}

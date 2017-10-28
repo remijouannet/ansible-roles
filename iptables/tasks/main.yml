@@ -1,0 +1,24 @@
+---
+- name: Ensure iptables is installed
+  yum:
+    name: iptables-services
+    state: installed
+  when: iptables.enable == "yes" 
+
+- name: Copy iptables configuration
+  template:
+    src: "{{ iptables.configuration_template | default('iptables.conf.j2') }}"
+    dest: "{{ iptables.restore_file | default('/etc/sysconfig/iptables') }}"
+    mode: 0644
+  when: iptables.enable == "yes"
+
+- name: execute iptables restore
+  shell: iptables-restore -c -v -w 10 < "{{ iptables.restore_file | default('/etc/sysconfig/iptables') }}"
+  when: iptables.enable == "yes" 
+
+- name: enable iptables service
+  service:
+    name: iptables
+    state: started
+    enabled: yes
+  when: iptables.enable == "yes"

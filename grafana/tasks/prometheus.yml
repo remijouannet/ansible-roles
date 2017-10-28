@@ -1,0 +1,17 @@
+- name: Enable Prometheus Datasource
+  uri:
+    url: http://localhost:3000/api/datasources
+    method: POST
+    user: "{{ grafana.config.security.admin_user }}"
+    password: "{{ grafana.config.security.admin_password }}"
+    body:
+      name: "{{ item.name }}"
+      type: "prometheus"
+      url: "{{ item.url }}"
+      access: "proxy"
+    force_basic_auth: yes
+    status_code: 200,409
+    body_format: json
+  when: grafana.data_sources.prometheus is defined
+  with_items:
+    - "{{ grafana.data_sources.prometheus }}"

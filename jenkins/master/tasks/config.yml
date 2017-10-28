@@ -1,0 +1,41 @@
+---
+- name: copy configuration jenkins
+  template:
+    src: sysconfig.jenkins.j2
+    dest: /etc/sysconfig/jenkins
+    owner: root
+    group: root
+    mode: 0700
+  register: config_changed
+
+- name: Restart jenkins now
+  service:
+    name: jenkins
+    state: restarted
+  when: config_changed.changed
+
+- name: Enable CLI
+  copy:
+    src: jenkins.CLI.xml
+    dest: "{{ jenkins.lib }}/jenkins.CLI.xml"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+
+- name: Configure Jenkins E-mail
+  when: jenkins.email is defined
+  template:
+    src: hudson.tasks.Mailer.xml.j2
+    dest: "{{ jenkins.lib }}/hudson.tasks.Mailer.xml"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+
+- name: Configure Jenkins Hostname
+  template:
+    src: jenkins.model.JenkinsLocationConfiguration.xml.j2
+    dest: "{{ jenkins.lib }}/jenkins.model.JenkinsLocationConfiguration.xml"
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+  notify: restart_jenkins

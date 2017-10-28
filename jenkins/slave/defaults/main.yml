@@ -1,0 +1,10 @@
+---
+jenkins:
+  url: https://jenkins1.test.test/
+  dependencies:
+    - 'libselinux-python'
+    - 'java'
+    - 'git'
+    - 'curl'
+  ssh_pub: |
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOdNPOjB42H3nNxn4Q7mETY+J7Mr8O7Q7cHyuulcIcHorFA3Xz77EdyvB4Bag8pt36Qmm24yxsUkpWmvHVsXQIMndPhNZ1pXAzP19BzNuELiM/8LQLiCED5XpVfTi0OYViZAuJhVkM7YdISUrVVCnRvMqrAh6vMJMkgCEsuPPNCwgyzLZmrtF463tJ+Qx3m4At1uxDPtQvLKC/ihZpFNrrTgXLI9U57fqAeyO2NYpveV8C7NwDSWRe+O1Tu8p3wTfwQYZBgvfPKuKV2xGf+SmMA/xYZOH2GRlVgz2+kgkF699AkJZ4hGr6QC8hY/2J/do/ssSiwY41XpHN2ZuI35qv jenkins

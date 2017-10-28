@@ -1,0 +1,28 @@
+---
+- name: wait_jenkins
+  shell: |
+    NEXT_WAIT_TIME=0
+    until {{ jenkins_wait_cli_cmd }} || [ $NEXT_WAIT_TIME -eq 10 ]; do
+      sleep $(( NEXT_WAIT_TIME++ ))
+    done
+
+- name: copy Groovy script for configuration
+  template:
+    src: slaves.groovy.j2
+    dest: /tmp/slaves.groovy
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Update configuration
+  shell: "{{ jenkins_cli_cmd }} groovy /tmp/slaves.groovy"
+  register: slaves_out
+
+- debug:
+    var: slaves_out.stdout_lines
+
+- file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/slaves.groovy

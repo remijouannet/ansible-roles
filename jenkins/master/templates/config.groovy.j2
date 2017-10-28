@@ -1,0 +1,50 @@
+import jenkins.model.*
+import hudson.model.* 
+import com.cloudbees.plugins.credentials.*
+import com.cloudbees.plugins.credentials.common.*
+import com.cloudbees.plugins.credentials.domains.*
+import com.cloudbees.plugins.credentials.impl.*
+import com.cloudbees.jenkins.plugins.sshcredentials.impl.*
+import hudson.plugins.sshslaves.*
+import org.jenkinsci.plugins.*
+import org.jenkinsci.plugins.plaincredentials.*
+import org.jenkinsci.plugins.plaincredentials.impl.*
+import hudson.util.Secret
+
+def inst = Jenkins.getInstance()
+
+def desc = inst.getDescriptor("org.jenkinsci.plugins.sysloglogger.SyslogLoggerPlugin")
+
+desc.setSyslogServerHostname("127.0.0.1")
+desc.setSyslogServerPort(514)
+desc.setSyslogTransport("UDP")
+desc.setFacility("SYSLOG")
+desc.save()
+
+
+domain = Domain.global()
+store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
+
+privateKey = new BasicSSHUserPrivateKey(
+    CredentialsScope.GLOBAL,
+    "jenkins-key",
+    "jenkins",
+    new BasicSSHUserPrivateKey.UsersPrivateKeySource(),
+    "",
+    "Jenkins user private key"
+    )
+
+store.addCredentials(domain, privateKey)
+
+{% for creds in jenkins_creds_text %}
+
+secretText{{ loop.index }} = new plaincredentials.impl.StringCredentialsImpl( 
+    CredentialsScope.GLOBAL,
+    "{{ creds['name'] }}",
+    "{{ creds['name'] }}",
+    Secret.fromString("{{ creds['secret'] }}")
+)
+
+store.addCredentials(domain, secretText{{ loop.index }})
+
+{% endfor %}

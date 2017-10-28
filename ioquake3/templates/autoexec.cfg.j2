@@ -1,0 +1,49 @@
+set vm_game 2           
+set vm_cgame 2         
+set vm_ui 2             
+set dedicated 1         
+set com_hunkmegs 1024
+set net_port 27960
+
+seta sv_hostname "{{ ioquake3.sv_hostname }}"
+seta g_motd "{{ ioquake3.g_motd }}"
+seta sv_maxclients 16
+seta sv_pure 1
+seta g_quadfactor 3
+seta g_friendlyFire 1
+
+seta g_allowvote {{ ioquake3.g_gametype }}
+
+// 0:FFA, 1:Tourney, 2:FFA, 3:TD, 4:CTF
+
+seta g_gametype {{ ioquake3.g_gametype }}               
+
+seta g_teamAutoJoin 0           
+seta g_teamForceBalance 0
+
+seta timelimit {{ ioquake3.timelimit }}             
+seta fraglimit {{ ioquake3.fraglimit }} 
+
+{% if ioquake3.g_gametype == "4" %}
+seta capturelimit {{ ioquake3.fraglimit }}             
+{% endif %}
+
+seta g_weaponrespawn 2          
+seta g_inactivity 30           
+seta g_forcerespawn 0           
+seta g_log server.log           
+seta logfile 3      
+seta rconpassword "secret"   
+
+seta rate "12400
+seta snaps "40"
+seta cl_maxpackets "40"
+seta cl_packetdup "1"
+
+seta bot_enable 0
+
+set dm1 "map q3ctf4; set nextmap vstr dm2"
+set dm2 "map q3ctf3; set nextmap vstr dm3"
+set dm3 "map q3ctf2; set nextmap vstr dm4"
+set dm4 "map q3ctf1; set nextmap vstr dm1"
+vstr dm1

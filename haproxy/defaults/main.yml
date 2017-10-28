@@ -1,0 +1,106 @@
+---
+haproxy_frontend_80:
+  - name: 'test'
+    hostname: 'test.test.com'
+
+haproxy_frontend_443:
+  - name: 'test'
+    hostname: 'test.test.com'
+
+haproxy_backend:
+  - name: 'test'
+    mode: 'http'
+    balance: 'leastconn'
+    backend_servers:
+      - name: 'test1'
+        address: '192.168.1.1'
+        port: 8080
+
+pem:
+  - name: 'test.test.com'
+    pem: |
+      -----BEGIN CERTIFICATE-----
+      MIIFoDCCA4igAwIBAgIJAICD/VNqLbNRMA0GCSqGSIb3DQEBCwUAMGUxCzAJBgNV
+      BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
+      aWRnaXRzIFB0eSBMdGQxHjAcBgNVBAMMFWplbmtpbnMxLnRlc3RkZW1vLm92aDAe
+      Fw0xNzA2MjYyMzIzMTBaFw0xOTA2MjYyMzIzMTBaMGUxCzAJBgNVBAYTAkFVMRMw
+      EQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0
+      eSBMdGQxHjAcBgNVBAMMFWplbmtpbnMxLnRlc3RkZW1vLm92aDCCAiIwDQYJKoZI
+      hvcNAQEBBQADggIPADCCAgoCggIBAJ226+co+UCd8XeoZf7CCpgKy9NTQ2VlXIVB
+      XL2H4QPqfwJ9coNd5g5aHN4Gr6MAN8k1hcR7R/lwCGuo7N9DFeiq1XPj3/NUZnqj
+      WfD/5hyjmItRx+LaygkNrhw61q/0ntHmcKePf6JhSqIxWJrUrHoCdqy+pm6hDvVf
+      zCVNQo3odsLEKV+rOs+Cjwy9wT//pTZSRg30HYAVEvOdTBqzQG05bk8HXFlrbIQb
+      +fuZUXd/czctdhTbq70Ku/QiBsGlEZmcWmbmWSod6N+gEt0wQLqGz8JTYrRiRPkd
+      U8+WBgqqJL3kz41FAMVKFIeYsdOWF2pOV88gZcOFGjZpbX594pW/drEeB4ZEU2lB
+      exmVcIuHWL2989zSk/7BJlDuweNXqvUdfoKS9uS8y2cxJepffDod3oySNSPWQ4Lj
+      X6FF2aioInxZygUNlRrxX6ut4SmfXL2hLBvS9qaGez6xLZ0WyVsZw0ApHsoqhwt5
+      HVorT/SPvq2B7HRYBpv7CDWadlzbRMoGKZS+1F1VPug98IWP8g48ugiW1fGZB8gB
+      0E4bpg+s6jSh1qc5Zou0mU2C9Ozzqd6aytjBP4DC0KXDn1FbE4EK1n5VKkuzLE6k
+      oLnKJrvQNwN+sL+gJyuCq09skb/q3GBSzHe2pu8OmwOUAdShIzVvq6tIgWJ+80ES
+      JK/AY8N1AgMBAAGjUzBRMB0GA1UdDgQWBBT9DWPSewXrTxGGjWmBjTGG/3M+GDAf
+      BgNVHSMEGDAWgBT9DWPSewXrTxGGjWmBjTGG/3M+GDAPBgNVHRMBAf8EBTADAQH/
+      MA0GCSqGSIb3DQEBCwUAA4ICAQBRuL8w8VMw0BZiYY4Vu3jhYa7Rxnv3glN35BrX
+      20yjK1ca4KYKyTHxqTc+9PJ7c7/BofJ8pdgp4HIyemZ+1QVGg2YIZZ3ptgTQyRkR
+      sXPNnco3p6xrnNZ17RnTyJ/Oql4p4wro/+9S46/KYS5nWJwOuNYIqi2dvs8R8c/d
+      Yyp+aN2eN/ndyYU6c/FDWOHDoYoiK0AlQ2A8gCv+xZrCotvLkT0ERT0NMcB4/cT8
+      9uSvl2uSEWeg2lWPENjsi9NrL9r20ipMtj27T6aLOhYLUklNWbyXs5k0gszIdLIp
+      OswiCcCF+5EewbW151ikJm2RefvleXZfTTSMycsWK32Bia2LVWb4FiI0SYrPEjQt
+      fVhdXjggjZGwNqiRMS4ftLUGASfxyST5WdH/mfJudZSy7TyiltKRIKce8hz7V/rM
+      ca8c+c2HLjdId4PokyQEyJTkxQ/nh1lzZqnZ1KBIO1+wYe2NlmGfLzLBQQh5QcIc
+      lw0oDa7OGc69VSABwhhicPdj1OwRjWGC83A6cQBl05oxL1OvYzfkz1mp07RLu46S
+      oivAM9KJh8rL97BtVsn63jZyE3MkQCljm3mHAzKLsam86vBBO7xlmOb+uol0UZcx
+      2Sn3In34hKjSsOyHP4ibvAm6SzraBkw2fK8apKRMKdBeBXGR5C1xOM0l5Xf674SY
+      QTAXzA==
+      -----END CERTIFICATE-----
+      -----BEGIN PRIVATE KEY-----
+      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
+      5si8ImgSw2GKdOx8xjhEOE5mVvoVUA==
+      -----END PRIVATE KEY-----

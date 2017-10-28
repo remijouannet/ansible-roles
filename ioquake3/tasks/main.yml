@@ -1,0 +1,94 @@
+---
+- name: install deps
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items: "{{ ioquake3.dependencies }}"
+
+- name: create ioq3srv group
+  group:
+    name: ioq3srv
+    state: present
+
+- name: create ioq3srv user
+  user:
+    name: ioq3srv
+    group: ioq3srv
+    home: /opt/ioquake3
+    shell: /bin/bash
+    state: present
+
+- stat:
+    path: /opt/ioquake3/ioq3ded.x86_64
+  register: exec_quake
+
+- name: git clone
+  git:
+    repo: https://github.com/ioquake/ioq3.git
+    dest: /tmp/ioquake3compile
+  when: exec_quake.stat.exists == False
+
+- name: compile_server
+  shell: cd /tmp/ioquake3compile && make -j2 && make copyfiles && cd /root/ && rm -rf /tmp/ioquake3compile
+  environment:
+    BUILD_CLIENT: 0
+    BUILD_SERVER: 1
+    USE_CURL: 1
+    USE_CODEC_OPUS: 1
+    USE_VOIP: 1
+    COPYDIR: /opt/ioquake3
+  when: exec_quake.stat.exists == False
+
+- name: download pak0.pk3 
+  get_url:
+    url: http://files.anitalink.com/gamecache/quake3/baseq3/pak0.pk3
+    dest: /opt/ioquake3/baseq3/pak0.pk3
+    checksum: sha1:9d588ea65e92944d3e23eeb6ec08f1dd666f4658
+
+- name: download quake3-latest-pk3s.zip 
+  get_url:
+    url: https://www.ioquake3.org/data/quake3-latest-pk3s.zip
+    dest: /tmp/quake3-latest-pk3s.zip
+    checksum: sha1:840be8dfeffe9d7d4d791f333c34f004ff530ed8
+    headers: 'Referer:https://ioquake3.org/extras/patch-data/'
+
+- name: Unarchive patch data
+  unarchive:
+    src: /tmp/quake3-latest-pk3s.zip
+    dest: /opt/ioquake3
+    remote_src: yes
+
+- name: copy archive 
+  shell: cp -nr /opt/ioquake3/quake3-latest-pk3s/* /opt/ioquake3/
+
+- file:
+    path: /opt/ioquake3
+    owner: ioq3srv
+    group: ioq3srv
+    mode: 0700
+    recurse: yes
+
+- name: Create autoexec ioquake3
+  template:
+    src: autoexec.cfg.j2
+    dest: /opt/ioquake3/baseq3/autoexec.cfg
+    mode: 0640
+    owner: ioq3srv
+    group: ioq3srv
+  notify:
+    - restart_ioquake3
+
+- name: Create Unit file ioquake3
+  template:
+    src: ioquake3.service.j2
+    dest: /etc/systemd/system/ioquake3.service
+    mode: 0640
+  notify:
+    - reload systemctl
+    - restart_ioquake3
+
+- name: Start ioquake3
+  service:
+    name: ioquake3.service
+    state: started
+    enabled: yes

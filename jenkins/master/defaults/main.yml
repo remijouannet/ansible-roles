@@ -1,0 +1,67 @@
+---
+jenkins_cli_cmd: "java -jar {{ jenkins.cli_dest }} -remoting -s {{ jenkins.api_url }} -auth {{ jenkins.user }}:{{ jenkins.password }}"
+jenkins_init_cli_cmd: "java -jar {{ jenkins.cli_dest }} -remoting -s {{ jenkins.api_url }} -auth {{ jenkins.user }}:$(cat /var/lib/jenkins/secrets/initialAdminPassword)"
+jenkins_restart_cli_cmd: "java -jar {{ jenkins.cli_dest }} -remoting -s {{ jenkins.api_url }} -auth {{ jenkins.user }}:{{ jenkins.password }} safe-restart"
+jenkins_wait_cli_cmd: "java -jar {{ jenkins.cli_dest }} -remoting -s {{ jenkins.api_url }} -auth {{ jenkins.user }}:{{ jenkins.password }} who-am-i"
+
+jenkins_slaves:
+  - name: 'swarm-1'
+    executors: 1
+    target: "127.0.0.1"
+    labels: "swarm"
+
+jenkins:
+  plugins:
+    - 'github'
+    - 'ssh-credentials'
+    - 'ssh'
+    - 'ssh-slaves'
+    - 'syslog-logger'
+    - 'job-dsl'
+  dest: /opt/jenkins
+  cli_dest: '/opt/jenkins/jenkins-cli.jar'
+  updates_dest: '/opt/jenkins/updates_jenkins.json'
+  java_version: "openjdk-8"
+  updates_url: "https://updates.jenkins.io/current/update-center.json"
+  api_url: "http://localhost:8080/"
+  seed_url: "git@github.com:github_account/seed.git"
+  email_admin: "jenkins@test.test"
+  user: admin
+  password: admin
+  url: https://jenkins1.test.test/
+  dependencies:
+    - 'libselinux-python'
+    - 'java'
+    - 'git'
+    - 'curl'
+  lib: /var/lib/jenkins
+  ssh_priv: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEpAIBAAKCAQEAznTTzoweNh95zcZ+EO5hE2PiezK/Du0O3B8rrpXCHB6KxQN1
+    8++xHcrweAWoPKbd+kJptuMsbFJKVprx1bF0CDJ3T4TWdaVwMz9fQczbhC4jP/C0
+    C4ghA+V6VX04tDmFYmQLiYVZDO2HSElK1VQp0bzKqwIerzCTJIAhLLjzzQsIMsy2
+    Zq7ReOt7SfkMd5uALdbsQz7ULyygv4oWaRTa604FyyPVOe36gHsjtjWKb3lfAuzc
+    A0lkXvjtU7vKd8E38EGGQYL3zyrildsRn/kpjAP8WGTh9hkZVYM9vpIJBevfQJCW
+    eIRq+kAvIWP9if3aP7LEosGONV6RzdmbiN+arwIDAQABAoIBAB/JKNsCA5y9l9kw
+    mDQvH08G79Wb6IJ5yPHm8qi8cdg2c5MFh2F5I8G8fu1boZ1E66QeGXyI2UwMF1ni
+    HR2TZpPkgS4C+6m9QNsDBL1yttFQ8Shk/LNR0BNzfzQuRU6qFHkjggs4No+g+lUM
+    w7K4dH/QGzvc5bB/QAg8md7y0sZch6gqiIGjcrBh/nVLmLWHgqyw1kCeTHT7zdda
+    qZ5moWGvzz6UR5Vuw8sp9dm9HPBJ51mwI/WPSNyUWF+nId4lwaamjAAAUvqyoszU
+    Ng6USKOc7qKsCIFKGfwmD1KcoPtqMVCOLrzBlI/VhDfRgsYit2qvQJmqHmdN1qg/
+    vaz7iwECgYEA6WKhQ9ClL0AX1tZo0b93VfTSf1jYzs+3jow/bdZzRVtugMgN6mix
+    TpqMDr8j3lxHgzW92uePAS1jyfKIgevFWWeFdY7tmSCshCsD6WMozevwLPYGtQr3
+    5+oRL8BL/bEBglLhk0jkVNDhNoMXaDq6gFeM8pNJruXlAh5wSPc6HO8CgYEA4nYy
+    buChpv8DRN56aN39fkyd2Wsryodiu1ljF5J4/r6t0XjsdLG3cG3Hrem/9VAQu30F
+    qFCsKy0wIoRgwvU8KomKn+6axkYF3b7yfD+YnGBayy6+tcpVhx5qgd+6NLy03G1q
+    1NVlStkX0+WmsDZpa4eq8Dq76tgE2kaQzYBp3kECgYEAuUgZGRqCmVF7245apvIn
+    TnFPz9P8Q6u6YQvMq2mOF+jvgIPSMF+vK+Ub/fUXB8gg6fT3Zdtht6COUVwfrW09
+    Pq4l0N+Il4HOFBuGPnn/ggOmqDsltgMgLtivjkZOzfgBZ7Je7Sv4QbGWqk1GfvPo
+    7k0TU91EqPpQZe8+W18SnrcCgYAFZqI/SLYyQGS4kMHEnH6+M1+UXtz1gJMXOsOF
+    PWYLVUrZ8xNYmSBx2vxnJmsAk79CaXHoGLxybyp1uEiCfczIiu02cT9ZuTPMnRA1
+    bGLcX+Pqcpvzw/aUOWJ65HYRaeq6UxW4K7q1tUW/NPvrufB7swmdnxj6OdqrxgEQ
+    FZ7wwQKBgQC8i0JO9pfSqh46d2yi3abZ4hxNJhEAkpCTsUqaP21RDrwLpyrec4q6
+    7aeeEAiyFSiZlDzuIifVA0lk0u9i+dEepOEksYsuBW48Edkjpr4/GlgBVsFvlV0p
+    IvS21H7MCukqy527Wo31X/8KwyXP6SNiOiHEwtI5j7pzZSrSm90XIg==
+    -----END RSA PRIVATE KEY-----
+  ssh_pub: |
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOdNPOjB42H3nNxn4Q7mETY+J7Mr8O7Q7cHyuulcIcHorFA3Xz77EdyvB4Bag8pt36Qmm24yxsUkpWmvHVsXQIMndPhNZ1pXAzP19BzNuELiM/8LQLiCED5XpVfTi0OYViZAuJhVkM7YdISUrVVCnRvMqrAh6vMJMkgCEsuPPNCwgyzLZmrtF463tJ+Qx3m4At1uxDPtQvLKC/ihZpFNrrTgXLI9U57fqAeyO2NYpveV8C7NwDSWRe+O1Tu8p3wTfwQYZBgvfPKuKV2xGf+SmMA/xYZOH2GRlVgz2+kgkF699AkJZ4hGr6QC8hY/2J/do/ssSiwY41XpHN2ZuI35qv jenkins

@@ -1,0 +1,19 @@
+- name: install pip
+  yum:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - python2
+    - python2-pip
+    - python2-devel
+    - openssl-devel
+    - gcc
+
+- name: install ansible 
+  pip:
+    name: "{{ item }}"
+    state: present
+    executable: pip2
+  with_items:
+    - ansible

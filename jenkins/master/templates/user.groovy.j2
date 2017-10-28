@@ -1,0 +1,36 @@
+#!groovy
+import hudson.security.*
+import jenkins.model.*
+import org.jenkinsci.main.modules.cli.auth.ssh.UserPropertyImpl
+
+def instance = Jenkins.getInstance()
+def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+def users = hudsonRealm.getAllUsers()
+users_s = users.collect { it.toString() }
+
+String fileContents = new File('/var/lib/jenkins/.ssh/id_rsa.pub').text
+
+if ("{{ jenkins.user }}" in users_s) {
+    println "{{ jenkins.user}} user already exists - updating password"
+
+    def user = hudson.model.User.get('{{ jenkins.user }}');
+    def password = hudson.security.HudsonPrivateSecurityRealm.Details.fromPlainPassword('{{ jenkins.password }}')
+    user.addProperty(password)
+    user.addProperty(new UserPropertyImpl(fileContents));
+    user.save()
+}
+else {
+    println "--> creating local {{ jenkins.user }} user"
+
+    hudsonRealm.createAccount('{{ jenkins.user}}', '{{ jenkins.password }}')
+    instance.setSecurityRealm(hudsonRealm)
+
+    def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+    strategy.setAllowAnonymousRead(false)
+    instance.setAuthorizationStrategy(strategy)
+    instance.save()
+
+    def user = hudson.model.User.get('{{ jenkins.user }}');
+    user.addProperty(new UserPropertyImpl(fileContents));
+    user.save()
+}

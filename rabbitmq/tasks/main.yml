@@ -1,0 +1,45 @@
+---
+- name: adding RabbitMQ public GPG key to the apt repo
+  apt_key: 
+    url: https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
+    state: present
+    id: 6026DFCA
+
+- name: adding RabbitMQ repo
+  apt_repository: 
+    repo: 'deb http://www.rabbitmq.com/debian/ testing main' 
+    update_cache: yes 
+    state: present
+
+- name: installing RabbitMQ server
+  apt: 
+    name: "{{ item }}"
+    update_cache: yes 
+    state: latest
+  with_items:
+    - rabbitmq-server
+    - python-requests
+
+- name: ensuring that the RabbitMQ service is running
+  service: 
+    name: rabbitmq-server 
+    state: started 
+    enabled: yes
+
+- rabbitmq_vhost:
+    name: "{{ item.name }}"
+    state: present
+  with_items:
+    - "{{ rabbitmq_vhost }}" 
+
+- rabbitmq_user:
+    user: "{{ item.user }}"
+    password: "{{ item.pass }}"
+    permissions:
+      - vhost: "{{ item.name }}"
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+    state: present
+  with_items:
+    - "{{ rabbitmq_vhost }}" 

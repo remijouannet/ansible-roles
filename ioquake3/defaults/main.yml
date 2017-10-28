@@ -1,0 +1,13 @@
+---
+ioquake3:
+  dependencies:
+    - 'git'
+    - 'make'
+    - 'gcc'
+  sv_hostname: "IOQUAKE3"
+  g_motd: "IOQUAKE3"
+  g_gametype: "2"
+  timelimit: "10"
+  fraglimit: "20"
+  capturelimit: "8"
+  g_allowvote: "1"

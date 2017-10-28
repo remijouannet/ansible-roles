@@ -1,0 +1,83 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+
+- name: create Prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: create Prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    createhome: yes
+    home: /opt/prometheus
+    shell: /sbin/nologin
+    comment: "Prometheus User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/prometheus
+    - /etc/prometheus
+    - /var/log/prometheus
+    - /var/run/prometheus
+    - /data/prometheus
+
+- name: download gosu executable
+  get_url:
+    url: "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64"
+    dest: "/usr/local/bin/gosu"
+
+- name: add executable permission
+  file:
+    path: "/usr/local/bin/gosu"
+    state: file
+    mode: "a+x"
+
+- name: download and untar prometheus tarball
+  unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus.version }}/prometheus-{{ prometheus.version }}.linux-amd64.tar.gz"
+    dest: /opt/prometheus
+    creates: /opt/prometheus/prometheus-{{ prometheus.version }}.linux-amd64/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+    copy: no
+  notify:
+    - restart prometheus
+
+- name: Copy prometheus configuration
+  template:
+    src: "{{ prometheus.configuration_template | default('prometheus.yml.j2') }}"
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+  notify:
+    - restart prometheus
+
+- name: Create Unit file prometheus
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    mode: 0640
+  notify:
+    - reload systemctl
+    - restart prometheus
+
+- name: Start prometheus
+  service:
+    name: prometheus.service
+    state: started
+    enabled: yes

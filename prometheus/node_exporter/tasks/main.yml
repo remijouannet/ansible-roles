@@ -1,0 +1,72 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+
+- name: create Prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: create Prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    createhome: yes
+    home: /opt/prometheus
+    shell: /sbin/nologin
+    comment: "Prometheus User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/node_exporter
+    - /etc/node_exporter
+    - /var/log/node_exporter
+    - /var/run/node_exporter
+
+- name: download gosu executable
+  get_url:
+    url: "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64"
+    dest: "/usr/local/bin/gosu"
+
+- name: add executable permission
+  file:
+    path: "/usr/local/bin/gosu"
+    state: file
+    mode: "a+x"
+
+- name: download and untar node_exporter tarball
+  unarchive:
+    src: "https://github.com/prometheus/node_exporter/releases/download/v0.14.0/node_exporter-0.14.0.linux-amd64.tar.gz"
+    dest: /opt/node_exporter
+    creates: /opt/node_exporter/node_exporter-0.14.0.linux-amd64/node_exporter
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+    copy: no
+  notify:
+    - restart node_exporter
+
+- name: Create Unit file node_exporter
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    mode: 0640
+  notify:
+    - restart node_exporter
+    - reload systemctl
+
+- name: Start node_exporter
+  service:
+    name: node_exporter.service
+    state: started
+    enabled: yes

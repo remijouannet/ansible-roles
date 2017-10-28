@@ -1,0 +1,6 @@
+---
+
+rabbitmq_vhost:
+  - name: "vhost1"
+    user: "user"
+    pass: "GTra56zUoMkE5wDc"

@@ -1,0 +1,12 @@
+filesystem_enable: False
+
+filesystem:
+  - dev: "/dev/xvdb"
+    fstype: "xfs"
+
+mount:
+  - src: "/dev/xvdb"
+    fstype: "xfs"
+    path: "/var/lib/jenkins"
+    opts: "defaults"
+    state: "mounted"

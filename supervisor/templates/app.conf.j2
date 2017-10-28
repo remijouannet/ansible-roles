@@ -1,0 +1,5 @@
+[program:{{ app_program }}]
+process_name=%(program_name)s
+command={{ app_command }}
+user={{ app_user }} 
+directory={{ app_cwd }}

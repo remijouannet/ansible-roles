@@ -1,0 +1,33 @@
+- name: install
+  yum:
+    name: 'sudo'
+    update_cache: yes
+    state: latest
+
+- copy:
+    src: sudoers
+    dest: /etc/sudoers
+    owner: root
+    group: root
+    mode: 0644
+
+- group:
+    name: supergroup
+    state: present
+
+- name: add users
+  user:
+    name: "{{ item.name }}"
+    createhome: yes
+    state: "{{ item.state }}"
+    groups: "{{ item.groups }}"
+  with_items:
+    - "{{ users }}"
+
+- name: Set authorized key took from vars
+  authorized_key:
+    user: "{{ item.name }}"
+    state: "{{ item.state }}"
+    key: "{{ item.ssh_key }}"
+  with_items:
+    - "{{ ssh_key }}"

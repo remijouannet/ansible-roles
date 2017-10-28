@@ -1,0 +1,28 @@
+- name: Packages python3.6
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - python3-setuptools
+    - python3-dev
+    - libffi-dev
+    - zlib1g-dev
+    - libjpeg62-turbo-dev
+    - libssl-dev
+
+- name: install pip 
+  easy_install:
+    name: pip
+    state: latest
+    executable: easy_install-3.4
+
+- name : Install common python3.4 tools with pip
+  pip: 
+    name: "{{ item }}"
+    state: latest
+    executable: pip3.4
+  with_items:
+    - setuptools
+    - virtualenv
+    - virtualenvwrapper
+

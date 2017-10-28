@@ -1,0 +1,8 @@
+---
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+- name: restart_ioquake3
+  service:
+    name: ioquake3
+    state: restarted

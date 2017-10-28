@@ -1,0 +1,13 @@
+server {
+    listen       80;
+    server_name localhost;
+
+    location /static/{
+        alias {{ static_dir }};
+    }
+
+    location / {
+        include uwsgi_params;
+        proxy_pass {{ proxy_pass }};
+    }
+}

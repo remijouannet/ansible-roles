@@ -1,0 +1,10 @@
+---
+grafana:
+  dependencies:
+    - 'git'
+    - 'curl'
+  config:
+    security:
+      admin_user: admin
+      admin_password: admin
+      secret_key: HNVnWXnCzy81c0THl5XC6qP7cwekAZId

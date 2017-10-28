@@ -1,0 +1,56 @@
+import javaposse.jobdsl.dsl.DslScriptLoader
+import javaposse.jobdsl.plugin.JenkinsJobManagement
+import javaposse.jobdsl.plugin.GlobalJobDslSecurityConfiguration
+import jenkins.model.GlobalConfiguration
+
+GlobalConfiguration.all().get(GlobalJobDslSecurityConfiguration.class).useScriptSecurity=false
+
+def workspace = new File('.')
+def jobManagement = new JenkinsJobManagement(System.out, [:], workspace)
+
+text = """
+job('seed') {
+
+    description '''
+        One job to rule them all !!!
+
+        This job is managed by Salt
+    '''
+
+    scm {
+        git {
+            remote {
+                url('{{ jenkins.seed_url }}')
+                credentials('jenkins-key')
+                branches('master')
+                extensions {
+                    relativeTargetDirectory('dsl')
+                }
+            }
+        }
+    }
+
+    logRotator(-1, 10, 1, -1)
+
+    triggers {
+        pollSCM {
+            scmpoll_spec('H/1 * * * *')
+        } 
+    }
+
+    wrappers {
+        colorizeOutput()
+    }
+
+    steps {
+
+        dsl {
+            external('dsl/*.groovy')
+            removeAction('DELETE')
+            removeViewAction('DELETE')
+        }
+    }
+}
+"""
+
+new DslScriptLoader(jobManagement).runScript(text)

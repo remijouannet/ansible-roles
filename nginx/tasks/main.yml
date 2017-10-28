@@ -1,0 +1,37 @@
+---
+- name: nginx Add key
+  apt_key: 
+    url: https://nginx.org/keys/nginx_signing.key
+    id: 7BD9BF62
+    state: present
+
+- name: Repo nginx
+  apt_repository:
+    repo: deb http://nginx.org/packages/debian/ jessie nginx
+    state: present
+
+- apt: 
+    name: "nginx" 
+    state: latest 
+    update_cache: yes
+
+- service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: clean default nginx conf
+  file:
+    state: absent
+    path: "/etc/nginx/conf.d/default.conf"
+
+- name: Copy app.conf file
+  template: 
+    src: app.conf.j2
+    dest: /etc/nginx/conf.d/app.conf
+
+- service:
+    name: nginx
+    state: reloaded
+    enabled: yes
+

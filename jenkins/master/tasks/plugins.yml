@@ -1,0 +1,20 @@
+---
+- name: wait_jenkins
+  shell: |
+    NEXT_WAIT_TIME=0
+    until {{ jenkins_wait_cli_cmd }} || [ $NEXT_WAIT_TIME -eq 10 ]; do
+      sleep $(( NEXT_WAIT_TIME++ ))
+    done
+
+- name: Ensure jenkins running before requesting safe restart
+  service:
+    name: jenkins
+    state: started
+
+- name: Install/update plugins
+  shell: "{{ jenkins_cli_cmd }} install-plugin {{ item }}"
+  ignore_errors: yes
+  with_items: "{{ jenkins.plugins }}"
+
+- name: restart_jenkins
+  shell: "{{ jenkins_restart_cli_cmd }}"

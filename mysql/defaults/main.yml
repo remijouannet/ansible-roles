@@ -1,0 +1,12 @@
+---
+
+mysql_port: 3306
+mysql_bind_address: "0.0.0.0"
+mysql_root_db_pass: "gtWqk2asTfFBi9KQ"
+
+mysql_db:
+  - name: "db1"
+    user: "user"
+    pass: "GTra56zUoMkE5wDc"
+    priv: "db1.*:ALL"
+    host: "0.0.0.0"
