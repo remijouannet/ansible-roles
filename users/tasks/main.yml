@@ -3,6 +3,14 @@
     name: 'sudo'
     update_cache: yes
     state: latest
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: install
+  apt:
+    name: 'sudo'
+    update_cache: yes
+    state: latest
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - copy:
     src: sudoers
