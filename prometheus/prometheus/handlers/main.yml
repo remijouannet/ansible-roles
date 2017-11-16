@@ -7,7 +7,7 @@
     name: prometheus
     state: restarted
 
-- name: restart prometheus
+- name: reload prometheus
   service:
     name: prometheus
     state: reloaded
