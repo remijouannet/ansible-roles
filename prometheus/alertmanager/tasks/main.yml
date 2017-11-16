@@ -1,0 +1,83 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+
+- name: create Alertmanager group
+  group:
+    name: alertmanager
+    state: present
+
+- name: create Alertmanager user
+  user:
+    name: alertmanager
+    group: alertmanager
+    createhome: yes
+    home: /opt/alertmanager
+    shell: /sbin/nologin
+    comment: "Alertmanager User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: alertmanager
+    group: alertmanager
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/alertmanager
+    - /etc/alertmanager
+    - /var/log/alertmanager
+    - /var/run/alertmanager
+    - /data/alertmanager
+
+- name: download gosu executable
+  get_url:
+    url: "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64"
+    dest: "/usr/local/bin/gosu"
+
+- name: add executable permission
+  file:
+    path: "/usr/local/bin/gosu"
+    state: file
+    mode: "a+x"
+
+- name: download and untar alertmanager tarball
+  unarchive:
+    src: "https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager.version }}/alertmanager-{{ alertmanager.version }}.linux-amd64.tar.gz"
+    dest: /opt/alertmanager
+    creates: /opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux-amd64/alertmanager
+    owner: alertmanager
+    group: alertmanager
+    mode: 0740
+    copy: no
+  notify:
+    - restart alertmanager
+
+- name: Copy alertmanager configuration
+  template:
+    src: "{{ alertmanager.configuration_template | default('alertmanager.yml.j2') }}"
+    dest: /etc/alertmanager/alertmanager.yml
+    owner: alertmanager
+    group: alertmanager
+    mode: 0740
+  notify:
+    - restart alertmanager
+
+- name: Create Unit file alertmanager
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+    mode: 0640
+  notify:
+    - reload systemctl
+    - restart alertmanager
+
+- name: Start alertmanager
+  service:
+    name: alertmanager.service
+    state: started
+    enabled: yes

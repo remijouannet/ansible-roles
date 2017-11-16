@@ -1,0 +1,16 @@
+[Unit]
+Description=AlertManager
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=alertmanager
+Group=alertmanager
+ExecStart=/opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux-amd64/alertmanager -config.file=/etc/alertmanager/alertmanager.yml {{ alertmanager.start_parameters }}
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
