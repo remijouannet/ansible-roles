@@ -6,3 +6,8 @@
   service:
     name: prometheus
     state: restarted
+
+- name: restart prometheus
+  service:
+    name: prometheus
+    state: reloaded

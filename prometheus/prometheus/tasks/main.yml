@@ -30,6 +30,7 @@
   with_items:
     - /opt/prometheus
     - /etc/prometheus
+    - /etc/prometheus/rules
     - /var/log/prometheus
     - /var/run/prometheus
     - /data/prometheus
@@ -66,6 +67,17 @@
     mode: 0740
   notify:
     - restart prometheus
+
+- name: Copy prometheus configuration
+  copy:
+    src: "{{ prometheus.rules_template }}"
+    dest: /etc/prometheus/rules
+    owner: prometheus
+    group: prometheus
+    directory_mode: yes
+  when: prometheus.rules_template is defined
+  notify:
+    - reload prometheus
 
 - name: Create Unit file prometheus
   template:
