@@ -12,13 +12,6 @@
     state: latest
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
-- copy:
-    src: sudoers
-    dest: /etc/sudoers
-    owner: root
-    group: root
-    mode: 0644
-
 - group:
     name: supergroup
     state: present
@@ -39,3 +32,10 @@
     key: "{{ item.ssh_key }}"
   with_items:
     - "{{ ssh_key }}"
+
+- copy:
+    src: sudoers
+    dest: /etc/sudoers
+    owner: root
+    group: root
+    mode: 0644
