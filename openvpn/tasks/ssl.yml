@@ -6,68 +6,10 @@
     mode: 0600
     state: directory
 
-- name: Copy ca crt files
-  copy:
-    dest: "/etc/openvpn/ssl/ca.crt"
-    content: "{{ openvpn.ssl.ca.crt }}"
-    owner: openvpn
-    group: openvpn
-    mode: 0600
-  notify: restart openvpn
-
-- name: Copy ca key files
-  copy:
-    dest: "/etc/openvpn/ssl/ca.key"
-    content: "{{ openvpn.ssl.ca.key }}"
-    owner: openvpn
-    group: openvpn
-    mode: 0600
-  notify: restart openvpn
-  when: openvpn.mode  == 'server'
-
-- name: Copy server key files
-  copy:
-    dest: "/etc/openvpn/ssl/server.key"
-    content: "{{ openvpn.ssl.server.key }}"
-    owner: openvpn
-    group: openvpn
-    mode: 0600
-  notify: restart openvpn
-  when: openvpn.mode  == 'server'
-
-- name: Copy server crt files
-  copy:
-    dest: "/etc/openvpn/ssl/server.crt"
-    content: "{{ openvpn.ssl.server.crt }}"
-    owner: openvpn
-    group: openvpn
-    mode: 0600
-  notify: restart openvpn
-
-- name: Copy client crt files
-  copy:
-    dest: "/etc/openvpn/ssl/client.crt"
-    content: "{{ openvpn.ssl.client.crt }}"
-    owner: openvpn
-    group: openvpn
-    mode: 0600
-  notify: restart openvpn
-  when: openvpn.mode  == 'client'
-
-- name: Copy client key files
-  copy:
-    dest: "/etc/openvpn/ssl/client.key"
-    content: "{{ openvpn.ssl.client.key }}"
-    owner: openvpn
-    group: openvpn
-    mode: 0600
-  notify: restart openvpn
-  when: openvpn.mode  == 'client'
-
 - name: Copy dh key files
   copy:
     dest: "/etc/openvpn/ssl/dh.pem"
-    content: "{{ openvpn.ssl.dh }}"
+    content: "{{ openvpn.dh }}"
     owner: openvpn
     group: openvpn
     mode: 0600

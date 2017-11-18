@@ -4,27 +4,45 @@
     state: present
 
 - user:
-    name: openvn
+    name: openvpn
     shell: /bin/false
     groups: openvpn
     append: yes
 
-- name: Ensure openvpn is installed
+- name: install
   yum:
-    name: openvpn
-    state: installed
+    name: 'openvpn'
+    update_cache: yes
+    state: latest
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
-- include: ssl.yml
+- name: install
+  apt:
+    name: 'openvpn'
+    update_cache: yes
+    state: latest
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
-- name: Copy openvpn configuration in place.
+- import_tasks: ssl.yml
+
+- name: Copy openvpn server configuration in place.
   template:
     src: "{{ openvpn.configuration_template | default('server.conf.j2') }}"
     dest: /etc/openvpn/server.conf
     mode: 0644
   notify: restart openvpn
+  when: openvpn.mode == "server"
+
+- name: Copy openvpn client configuration in place.
+  template:
+    src: "{{ openvpn.configuration_template | default('client.conf.j2') }}"
+    dest: /etc/openvpn/client.conf
+    mode: 0644
+  notify: restart openvpn
+  when: openvpn.mode == "client"
 
 - name: Ensure openvpn is started and enabled on boot.
   service:
-    name: openvpn@server.service
+    name: "openvpn@{{ openvpn.mode }}.service"
     state: started
     enabled: yes
