@@ -1,0 +1,33 @@
+remote {{ openvpn.remote }} 1194 udp
+
+client
+
+nobind
+
+dev {{ openvpn.dev }}
+
+<ca>
+{{ openvpn.ca.crt }}
+</ca>
+
+<cert>
+{{ openvpn.client.crt }}
+</cert>
+
+<key>
+{{ openvpn.client.key }}
+</key>
+
+dh ssl/dh.pem
+
+keepalive 10 120
+
+comp-lzo
+
+user openvpn
+group openvpn
+
+persist-key
+persist-tun
+
+verb 3
