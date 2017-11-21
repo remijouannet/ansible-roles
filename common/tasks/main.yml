@@ -30,6 +30,7 @@
     - strace
     - nmap
     - apt-transport-https
+    - iperf
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: Install common tools
@@ -48,6 +49,7 @@
     - lsof
     - man
     - iotop
+    - iperf
     - stress
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
