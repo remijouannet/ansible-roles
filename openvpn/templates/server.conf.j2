@@ -33,3 +33,7 @@ persist-tun
 duplicate-cn
 
 verb 3
+
+{% for rule in openvpn.rules %}
+push "{{ rule }}"
+{% endfor %}
