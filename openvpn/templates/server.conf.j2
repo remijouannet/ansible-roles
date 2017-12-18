@@ -34,6 +34,12 @@ duplicate-cn
 
 verb 3
 
+status openvpn-status.log
+
 {% for rule in openvpn.rules %}
 push "{{ rule }}"
+{% endfor %}
+
+{% for route in openvpn.routes %}
+{{ route }}
 {% endfor %}
