@@ -30,16 +30,22 @@ group openvpn
 persist-key
 persist-tun
 
-duplicate-cn
+topology subnet
 
 verb 3
 
 status openvpn-status.log
 
+ifconfig 10.10.0.1 255.255.255.0
+
+{% if openvpn.rules  is defined %}
 {% for rule in openvpn.rules %}
 push "{{ rule }}"
 {% endfor %}
+{% endif %}
 
 {% for route in openvpn.routes %}
 {{ route }}
 {% endfor %}
+
+client-config-dir ccd

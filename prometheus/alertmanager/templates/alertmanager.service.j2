@@ -6,7 +6,7 @@ After=basic.target network.target
 [Service]
 User=alertmanager
 Group=alertmanager
-ExecStart=/opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux-amd64/alertmanager -config.file=/etc/alertmanager/alertmanager.yml {{ alertmanager.start_parameters }}
+ExecStart=/opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux/alertmanager -config.file=/etc/alertmanager/alertmanager.yml {{ alertmanager.start_parameters }}
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always

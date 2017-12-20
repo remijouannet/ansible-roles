@@ -1,0 +1,19 @@
+[Unit]
+Description= blackbox_exporter
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+PermissionsStartOnly=true
+ExecStartPre=/sbin/setcap 'cap_net_raw+ep' /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter
+{% if blackbox_exporter_opts is defined %}
+ExecStart=/opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter {{ blackbox_exporter_opts }}
+{% else %}
+ExecStart=/opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter --config.file=/etc/blackbox_exporter/blackbox_exporter.yml
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

@@ -35,10 +35,10 @@
     recurse: yes
     mode: 0740
   with_items:
-    - /opt/node_exporter
-    - /etc/node_exporter
-    - /var/log/node_exporter
-    - /var/run/node_exporter
+    - /opt/blackbox_exporter
+    - /etc/blackbox_exporter
+    - /var/log/blackbox_exporter
+    - /var/run/blackbox_exporter
 
 - name: download gosu executable
   get_url:
@@ -58,80 +58,90 @@
     state: file
     mode: "a+x"
 
-- name: download and untar node_exporter tarball
+- name: download and untar blackbox_exporter tarball
   unarchive:
-    src: "https://github.com/prometheus/node_exporter/releases/download/v0.15.1/node_exporter-0.15.1.linux-amd64.tar.gz"
-    dest: /opt/node_exporter
-    creates: /opt/node_exporter/node_exporter-0.15.1.linux/node_exporter
+    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v0.11.0/blackbox_exporter-0.11.0.linux-amd64.tar.gz"
+    dest: /opt/blackbox_exporter
+    creates: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter
     owner: prometheus
     group: prometheus
     mode: 0740
     copy: no
   when: ansible_architecture == 'x86_64'
   notify:
-    - restart node_exporter
+    - restart blackbox_exporter
 
-- name: download and untar node_exporter tarball
+- name: download and untar blackbox_exporter tarball
   unarchive:
-    src: "https://github.com/prometheus/node_exporter/releases/download/v0.15.1/node_exporter-0.15.1.linux-armv7.tar.gz"
-    dest: /opt/node_exporter
-    creates: /opt/node_exporter/node_exporter-0.15.1.linux/node_exporter
+    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v0.11.0/blackbox_exporter-0.11.0.linux-armv7.tar.gz"
+    dest: /opt/blackbox_exporter
+    creates: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter
     owner: prometheus
     group: prometheus
     mode: 0740
     copy: no
   when: ansible_architecture == 'armv7l'
   notify:
-    - restart node_exporter
+    - restart blackbox_exporter
 
-- name: download and untar node_exporter tarball
+- name: download and untar blackbox_exporter tarball
   unarchive:
-    src: "https://github.com/prometheus/node_exporter/releases/download/v0.15.1/node_exporter-0.15.1.linux-armv6.tar.gz"
-    dest: /opt/node_exporter
-    creates: /opt/node_exporter/node_exporter-0.15.1.linux/node_exporter
+    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v0.11.0/blackbox_exporter-0.11.0.linux-armv6.tar.gz"
+    dest: /opt/blackbox_exporter
+    creates: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter
     owner: prometheus
     group: prometheus
     mode: 0740
     copy: no
   when: ansible_architecture == 'armv6l'
   notify:
-    - restart node_exporter
+    - restart blackbox_exporter
 
 - file:
-    src: /opt/node_exporter/node_exporter-0.15.1.linux-amd64
-    dest: /opt/node_exporter/node_exporter-0.15.1.linux
+    src: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux-amd64
+    dest: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux
     owner: prometheus
     group: prometheus
     state: link
   when: ansible_architecture == 'x86_64'
 
 - file:
-    src: /opt/node_exporter/node_exporter-0.15.1.linux-armv7
-    dest: /opt/node_exporter/node_exporter-0.15.1.linux
+    src: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux-armv7
+    dest: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux
     owner: prometheus
     group: prometheus
     state: link
   when: ansible_architecture == 'armv7l'
 
 - file:
-    src: /opt/node_exporter/node_exporter-0.15.1.linux-armv6
-    dest: /opt/node_exporter/node_exporter-0.15.1.linux
+    src: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux-armv6
+    dest: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux
     owner: prometheus
     group: prometheus
     state: link
   when: ansible_architecture == 'armv6l'
 
-- name: Create Unit file node_exporter
+- name: Copy blackbox configuration
   template:
-    src: node_exporter.service.j2
-    dest: /etc/systemd/system/node_exporter.service
+    src: "{{ blackbox_exporter.configuration_template | default('blackbox_exporter.yml.j2') }}"
+    dest: /etc/blackbox_exporter/blackbox_exporter.yml
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+  notify:
+    - restart blackbox_exporter
+
+- name: Create Unit file blackbox_exporter
+  template:
+    src: blackbox_exporter.service.j2
+    dest: /etc/systemd/system/blackbox_exporter.service
     mode: 0640
   notify:
-    - restart node_exporter
+    - restart blackbox_exporter
     - reload systemctl
 
-- name: Start node_exporter
+- name: Start blackbox_exporter
   service:
-    name: node_exporter.service
+    name: blackbox_exporter.service
     state: started
     enabled: yes

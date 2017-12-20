@@ -1,0 +1,20 @@
+- name: mkdir for ccd directory
+  file:
+    path: /etc/openvpn/ccd
+    state: directory
+    owner: openvpn
+    group: openvpn
+    recurse: yes
+    mode: 0740
+
+- name: Copy ccd configuration
+  copy:
+    dest: "/etc/openvpn/ccd/{{ item.name }}"
+    content: "{{ item.configuration  }}"
+    mode: 0600
+    owner: openvpn
+    group: openvpn
+  notify: restart openvpn
+  when: openvpn.mode == "server" and openvpn.ccd is defined
+  items:
+    - "{{ openvpn.ccd }}"

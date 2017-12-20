@@ -1,0 +1,8 @@
+---
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+- name: restart blackbox_exporter
+  service:
+    name: blackbox_exporter
+    state: restarted

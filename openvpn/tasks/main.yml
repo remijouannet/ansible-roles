@@ -25,6 +25,7 @@
 
 - import_tasks: ssl.yml
 
+
 - name: Copy openvpn server configuration in place.
   template:
     src: "{{ openvpn.configuration_template | default('server.conf.j2') }}"
@@ -40,6 +41,9 @@
     mode: 0644
   notify: restart openvpn
   when: openvpn.mode == "client"
+
+- import_tasks: ccd.yml
+  when: openvpn.mode == "server"
 
 - name: Ensure openvpn is started and enabled on boot.
   service:

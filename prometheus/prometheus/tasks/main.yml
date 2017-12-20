@@ -3,6 +3,13 @@
   yum:
     name: libselinux-python
     state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name: python-selinux
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: create Prometheus group
   group:
@@ -39,6 +46,13 @@
   get_url:
     url: "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64"
     dest: "/usr/local/bin/gosu"
+  when: ansible_architecture == 'x86_64'
+
+- name: download gosu executable
+  get_url:
+    url: "https://github.com/tianon/gosu/releases/download/1.10/gosu-armhf"
+    dest: "/usr/local/bin/gosu"
+  when: ansible_architecture == 'armv7l' or ansible_architecture == 'armv6l'
 
 - name: add executable permission
   file:
@@ -50,13 +64,43 @@
   unarchive:
     src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus.version }}/prometheus-{{ prometheus.version }}.linux-amd64.tar.gz"
     dest: /opt/prometheus
-    creates: /opt/prometheus/prometheus-{{ prometheus.version }}.linux-amd64/prometheus
+    creates: /opt/prometheus/prometheus-{{ prometheus.version }}.linux/prometheus
     owner: prometheus
     group: prometheus
     mode: 0740
     copy: no
+  when: ansible_architecture == 'x86_64'
   notify:
     - restart prometheus
+
+- name: download and untar prometheus tarball
+  unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus.version }}/prometheus-{{ prometheus.version }}.linux-armv7.tar.gz"
+    dest: /opt/prometheus
+    creates: /opt/prometheus/prometheus-{{ prometheus.version }}.linux/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+    copy: no
+  when: ansible_architecture == 'armv7l'
+  notify:
+    - restart prometheus
+
+- file:
+    src: /opt/prometheus/prometheus-{{ prometheus.version }}.linux-amd64
+    dest: /opt/prometheus/prometheus-{{ prometheus.version }}.linux
+    owner: prometheus
+    group: prometheus
+    state: link
+  when: ansible_architecture == 'x86_64'
+
+- file:
+    src: /opt/prometheus/prometheus-{{ prometheus.version }}.linux-armv7
+    dest: /opt/prometheus/prometheus-{{ prometheus.version }}.linux
+    owner: prometheus
+    group: prometheus
+    state: link
+  when: ansible_architecture == 'armv7l'
 
 - name: Copy prometheus configuration
   template:

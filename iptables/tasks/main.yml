@@ -3,22 +3,46 @@
   yum:
     name: iptables-services
     state: installed
-  when: iptables.enable == "yes" 
+  when: iptables.enable == "yes" and ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux'] 
+
+- name: Ensure iptables is installed
+  apt:
+    name: iptables-persistent
+    state: installed
+  when: iptables.enable == "yes" and ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: Copy iptables configuration
   template:
     src: "{{ iptables.configuration_template | default('iptables.conf.j2') }}"
     dest: "{{ iptables.restore_file | default('/etc/sysconfig/iptables') }}"
     mode: 0644
-  when: iptables.enable == "yes"
+  when: iptables.enable == "yes" and ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux'] 
+
+- name: Copy iptables configuration
+  template:
+    src: "{{ iptables.configuration_template | default('iptables.conf.j2') }}"
+    dest: "{{ iptables.restore_file | default('/etc/iptables.ansible.rules') }}"
+    mode: 0644
+  when: iptables.enable == "yes" and ansible_distribution in ['Debian', 'Ubuntu'] 
 
 - name: execute iptables restore
   shell: iptables-restore -c -v -w 10 < "{{ iptables.restore_file | default('/etc/sysconfig/iptables') }}"
-  when: iptables.enable == "yes" 
+  when: iptables.enable == "yes" and ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: execute iptables restore
+  shell: iptables-restore -c -v < "{{ iptables.restore_file | default('/etc/iptables.ansible.rules') }}"
+  when: iptables.enable == "yes" and ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: enable iptables service
   service:
     name: iptables
     state: started
     enabled: yes
-  when: iptables.enable == "yes"
+  when: iptables.enable == "yes" and ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: enable iptables service
+  service:
+    name: netfilter-persistent
+    state: started
+    enabled: yes
+  when: iptables.enable == "yes" and ansible_distribution in ['Debian', 'Ubuntu']

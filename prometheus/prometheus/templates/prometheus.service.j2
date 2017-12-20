@@ -6,8 +6,8 @@ After=basic.target network.target
 [Service]
 User=prometheus
 Group=prometheus
-WorkingDirectory=/opt/prometheus/prometheus-{{ prometheus.version }}.linux-amd64
-ExecStart=/opt/prometheus/prometheus-{{ prometheus.version }}.linux-amd64/prometheus --config.file=/etc/prometheus/prometheus.yml {{ prometheus.start_parameters }}
+WorkingDirectory=/opt/prometheus/prometheus-{{ prometheus.version }}.linux
+ExecStart=/opt/prometheus/prometheus-{{ prometheus.version }}.linux/prometheus --config.file=/etc/prometheus/prometheus.yml {{ prometheus.start_parameters }}
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always

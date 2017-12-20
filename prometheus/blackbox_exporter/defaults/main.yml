@@ -1,0 +1,4 @@
+---
+blackbox_exporter:
+  version: 0.11.0
+
