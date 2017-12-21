@@ -1,15 +1,18 @@
 modules:
-  http_post_2xx:
+  http:
     prober: http
     timeout: 5s
-    http:
-      method: POST
-      headers:
-        Content-Type: application/json
-      body: '{}'
-  tcp_connect_example:
+  tcp:
+    prober: tcp
+    timeout: 2s
+  icmp:
+    prober: icmp
+    timeout: 2s
+  dns:
+    prober: dns
+    timeout: 2s
+  tls:
     prober: tcp
     timeout: 5s
-  icmp_example:
-    prober: icmp
-    timeout: 5s
+    tcp:
+      tls: true

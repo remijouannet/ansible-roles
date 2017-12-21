@@ -21,7 +21,7 @@
 - name: Copy iptables configuration
   template:
     src: "{{ iptables.configuration_template | default('iptables.conf.j2') }}"
-    dest: "{{ iptables.restore_file | default('/etc/iptables.ansible.rules') }}"
+    dest: "{{ iptables.restore_file | default('/etc/iptables/rules.v4') }}"
     mode: 0644
   when: iptables.enable == "yes" and ansible_distribution in ['Debian', 'Ubuntu'] 
 
@@ -30,7 +30,7 @@
   when: iptables.enable == "yes" and ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: execute iptables restore
-  shell: iptables-restore -c -v < "{{ iptables.restore_file | default('/etc/iptables.ansible.rules') }}"
+  shell: iptables-restore -c -v < "{{ iptables.restore_file | default('/etc/iptables/rules.v4') }}"
   when: iptables.enable == "yes" and ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: enable iptables service
