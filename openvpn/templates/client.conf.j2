@@ -20,7 +20,11 @@ dev {{ openvpn.dev }}
 
 dh ssl/dh.pem
 
-keepalive 10 120
+keepalive 10 60
+
+connect-retry 30
+
+resolv-retry infinite
 
 comp-lzo
 
