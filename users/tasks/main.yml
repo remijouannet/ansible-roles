@@ -3,7 +3,7 @@
     name: 'sudo'
     update_cache: yes
     state: latest
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: install
   apt:

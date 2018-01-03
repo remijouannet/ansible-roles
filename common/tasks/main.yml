@@ -1,17 +1,5 @@
 ---
 
-- name: upgrade all packages
-  yum:
-    name: '*'
-    update_cache: yes
-    state: latest
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
-
-- name: Update all packages to the latest version
-  apt:
-    upgrade: yes
-  when: ansible_distribution in ['Debian', 'Ubuntu']
-
 - name: Install common tools
   apt: 
     name: "{{ item }}" 
@@ -51,7 +39,23 @@
     - iotop
     - iperf
     - stress
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+    - libselinux-python
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+
+- name: upgrade all packages
+  yum:
+    name: '*'
+    update_cache: yes
+    state: latest
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+
+- name: Update all packages to the latest version
+  apt:
+    upgrade: yes
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
 
 - name: set hostname
   hostname:
