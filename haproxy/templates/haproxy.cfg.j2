@@ -1,7 +1,7 @@
 global
   log /dev/log  local0 notice
   tune.ssl.default-dh-param 2048
-  stats socket /var/lib/haproxy/stats level admin
+  stats socket /var/lib/haproxy/stats mode 660 level admin
 
 defaults
   log global
