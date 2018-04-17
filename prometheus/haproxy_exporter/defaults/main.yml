@@ -1,0 +1,3 @@
+---
+haproxy_exporter:
+    - opts: --haproxy.scrape-uri=unix:/var/lib/haproxy/stats
