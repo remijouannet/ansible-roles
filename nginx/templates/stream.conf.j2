@@ -1,0 +1,11 @@
+stream {
+    upstream {{ item.name }} {
+{% for host in item.upstream %}
+        server {{ host }};
+{% endfor %}
+    }
+    server {
+        listen {{ item.port }} {{ item.proto }};
+        proxy_pass {{ item.name }};
+    }
+}

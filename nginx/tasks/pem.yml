@@ -1,0 +1,29 @@
+- name: create directory for PEM files
+  file:
+    path: /etc/nginx/ssl
+    owner: root
+    group: root
+    mode: 0600
+    state: directory
+
+- name: Copy key files
+  template:
+    dest: "/etc/nginx/ssl/{{ item.name }}.key"
+    src: key.j2
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - "{{ nginx.pem }}"
+  notify: restart nginx
+
+- name: Copy crt files
+  template:
+    dest: "/etc/nginx/ssl/{{ item.name }}.crt"
+    src: crt.j2
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - "{{ nginx.pem }}"
+  notify: restart nginx

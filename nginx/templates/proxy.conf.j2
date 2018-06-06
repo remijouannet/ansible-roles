@@ -1,0 +1,32 @@
+upstream {{ item.name }} {
+{% for host in item.upstream %}
+    server {{ host }};
+{% endfor %}
+}
+
+{% if item.pem %}
+server {
+    listen 443;
+    server_name {{ item.server_name }};
+    ssl on;
+    ssl_certificate /etc/nginx/ssl/{{ item.pem }}.crt;
+    ssl_certificate_key /etc/nginx/ssl/{{ item.pem }}.key;
+    location / {
+        proxy_pass http://{{ item.name }};
+    }
+}
+
+server {
+    listen 80;
+    server_name {{ item.server_name }};
+    rewrite ^ https://$server_name$request_uri? permanent;
+}
+{% else %}
+server {
+    listen 80;
+    server_name {{ item.server_name }};
+    location / {
+        proxy_pass http://{{ item.name }};
+    }
+}
+{% endif %}
