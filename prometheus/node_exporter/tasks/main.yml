@@ -37,6 +37,7 @@
   with_items:
     - /opt/node_exporter
     - /etc/node_exporter
+    - /opt/node_exporter/textfile
     - /var/log/node_exporter
     - /var/run/node_exporter
 
