@@ -4,24 +4,28 @@
     key: http://epel.mirrors.ovh.net/epel/RPM-GPG-KEY-EPEL-7
     state: present
     validate_certs: no
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: add epel repo
   yum_repository:
     name: epel
     description: epel
     mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: add epel-debuginfo repo
   yum_repository:
     name: epel-debuginfo
     description: epel
     mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-debug-7&arch=$basearch
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: add epel-source repo
   yum_repository:
     name: epel-source
     description: epel
     mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-source-7&arch=$basearch
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: Install common tools
   apt: 
