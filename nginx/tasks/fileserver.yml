@@ -1,0 +1,38 @@
+---
+- name: mkdir /data/
+  file:
+    path: "/data/{{ item.1.folder }}" 
+    state: directory
+    owner: data
+    group: data
+    mode: 0774
+    recurse: True
+  with_subelements:
+    - "{{ nginx.fileserver }}"
+    - locations
+
+- name: add user to group
+  user:
+    name: nginx
+    groups: data
+    append: yes
+
+- name: set user permissions
+  file:
+    path: /data/
+    owner: data
+    group: data
+    recurse: True
+    mode: 0770
+
+- name: Nginx fileserver configuration
+  template:
+    src: fileserver.conf.j2
+    dest: "/etc/nginx/conf.d/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: 0740
+  notify:
+    - restart nginx
+  with_items:
+    - "{{ nginx.fileserver }}"

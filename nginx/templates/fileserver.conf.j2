@@ -1,0 +1,13 @@
+server {
+    listen 80;
+    server_name {{ item.server_name }};
+    
+{% for loc in item.locations %}
+    location /{{ loc.location }} {
+        autoindex on;
+        sendfile on;
+        sendfile_max_chunk 100m;
+        root /data/;
+    }
+{% endfor %}
+}
