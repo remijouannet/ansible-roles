@@ -16,12 +16,21 @@
     name: supergroup
     state: present
 
+- name: add groups
+  group:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ groups_to_add }}"
+  when: groups_to_add is defined
+
 - name: add users
   user:
     name: "{{ item.name }}"
     createhome: yes
     state: "{{ item.state }}"
     groups: "{{ item.groups }}"
+    home: "{{ item.home | default(omit) }}"
   with_items:
     - "{{ users }}"
 

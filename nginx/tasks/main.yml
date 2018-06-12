@@ -38,6 +38,7 @@
     state: installed
 
 - import_tasks: pem.yml
+  when: nginx.pem is defined
 
 - service:
     name: nginx
@@ -99,3 +100,20 @@
   with_items:
     - "{{ nginx.proxy }}"
   when: nginx.proxy is defined
+
+- name: Nginx fileserver configuration
+  template:
+    src: fileserver.conf.j2
+    dest: "/etc/nginx/conf.d/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: 0740
+  notify:
+    - restart nginx
+  with_items:
+    - "{{ nginx.fileserver }}"
+  when: nginx.fileserver is defined
+
+
+- import_tasks: fileserver.yml
+  when: nginx.fileserver is defined
