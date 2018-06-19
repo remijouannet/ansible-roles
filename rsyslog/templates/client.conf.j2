@@ -1,0 +1,72 @@
+$MaxMessageSize 64k
+$RepeatedMsgReduction off
+$PreserveFQDN off
+$umask 0000
+$MaxOpenFiles 65536
+$ActionFileDefaultTemplate RSYSLOG_SyslogProtocol23Format
+
+module(
+  load="impstats"
+  interval="120"
+  format="json"
+  bracketing="on"
+  resetCounters="on"
+  log.syslog="on"
+)
+module(
+  load="imuxsock"
+)
+input(
+  type="imuxsock"
+  Socket="/dev/log"
+  ruleset="local"
+)
+module(
+  load="imklog"
+)
+
+module(
+  load="imtcp"
+)
+input(
+  type="imtcp"
+  port="514"
+  address="127.0.0.1"
+  ruleset="local"
+)
+
+module(
+  load="imudp"
+)
+input(
+  type="imudp"
+  port="514"
+  address="127.0.0.1"
+  ruleset="local"
+)
+
+main_queue(
+  queue.type="linkedList"
+  queue.fileName="mainq"
+  queue.workerThreads="1"
+  queue.DiscardMark="10000"
+  queue.DiscardSeverity="6"
+  queue.size="110000"
+)
+
+ruleset(name="local") {
+  *.debug action(
+    type="omudp"
+    target="{{ rsyslog.server }}"
+    port="514"
+    queue.type="linkedList"
+    queue.workerthreads="1"
+    queue.DiscardMark="10000"
+    queue.DiscardSeverity="6"
+    queue.size="11000"
+    timeout="2"
+    action.resumeRetryCount="-1"
+    action.reportSuspension="on"
+    action.reportSuspensionContinuation="on"
+  )
+}

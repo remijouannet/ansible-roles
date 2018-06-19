@@ -1,0 +1,45 @@
+- name: Import rsyslog key
+  rpm_key:
+    key: http://rpms.adiscon.com/RPM-GPG-KEY-Adiscon
+    state: present
+    validate_certs: no
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: add rsyslog repo
+  yum_repository:
+    name: rsyslog repo
+    description: rsyslog repo
+    baseurl: http://rpms.adiscon.com/v8-stable/epel-$releasever/$basearch
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: Ensure Rsyslog is installed
+  yum:
+    name: rsyslog
+    state: installed
+
+- service:
+    name: rsyslog
+    state: started
+    enabled: yes
+
+- name: Rsyslog client configuration
+  template:
+    src: "client.conf.j2"
+    dest: "/etc/rsyslog.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart rsyslog
+  when: rsyslog.type == "client"
+
+- name: Rsyslog server configuration
+  template:
+    src: "server.conf.j2"
+    dest: "/etc/rsyslog.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart rsyslog
+  when: rsyslog.type == "server"

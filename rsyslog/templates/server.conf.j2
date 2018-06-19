@@ -1,0 +1,97 @@
+$MaxMessageSize 64k
+$RepeatedMsgReduction off
+$PreserveFQDN off
+$umask 0000
+$MaxOpenFiles 65536
+$ActionFileDefaultTemplate RSYSLOG_SyslogProtocol23Format
+
+module(
+  load="impstats"
+  interval="120"
+  format="json"
+  bracketing="on"
+  resetCounters="on"
+  log.syslog="on"
+)
+module(
+  load="imuxsock"
+)
+input(
+  type="imuxsock"
+  Socket="/dev/log"
+  ruleset="local"
+)
+module(
+  load="imklog"
+)
+
+module(
+  load="imtcp"
+)
+input(
+  type="imtcp"
+  port="514"
+  ruleset="remote"
+)
+
+module(
+  load="imudp"
+)
+input(
+  type="imudp"
+  port="514"
+  ruleset="remote"
+)
+
+template(
+  name="location"
+  type="string"
+  string="{{ rsyslog.location }}/%$MYHOSTNAME%/%HOSTNAME%/%$YEAR%/%$MONTH%/messages-%$YEAR%%$MONTH%%$DAY%.log"
+)
+
+main_queue(
+  queue.type="linkedList"
+  queue.fileName="mainq"
+  queue.workerThreads="1"
+  queue.DiscardMark="10000"
+  queue.DiscardSeverity="6"
+  queue.size="110000"
+)
+
+ruleset(name="local") {
+  *.debug action(
+    type="omudp"
+    target="127.0.0.1"
+    port="514"
+    queue.type="linkedList"
+    queue.workerthreads="1"
+    queue.DiscardMark="10000"
+    queue.DiscardSeverity="6"
+    queue.size="11000"
+    timeout="2"
+    action.resumeRetryCount="-1"
+    action.reportSuspension="on"
+    action.reportSuspensionContinuation="on"
+  )
+}
+
+$DefaultRuleset local
+ruleset(name="remote") {
+  *.debug action(
+    type="omfile"
+    Createdirs="on"
+    dirCreateMode="0755"
+    FileCreateMode="0644"
+    FileOwner="root"
+    FileGroup="root"
+    DirOwner="root"
+    DirGroup="root"
+    dynaFile="location"
+    template="default"
+    queue.type="linkedList"
+    queue.workerthreads="1"
+    queue.DiscardMark="10000"
+    queue.DiscardSeverity="6"
+    queue.size="11000"
+  )
+}
