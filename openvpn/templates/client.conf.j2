@@ -1,3 +1,7 @@
+{% if openvpn.syslog %}
+syslog
+{% endif %}
+
 remote {{ openvpn.remote }} {{ openvpn.port }} udp
 
 client

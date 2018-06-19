@@ -31,3 +31,8 @@ path = /var/lib/grafana/dashboards
 
 [alerting]
 enabled = false
+
+{% if grafana.syslog %}
+[log]
+mode = syslog
+{% endif %}

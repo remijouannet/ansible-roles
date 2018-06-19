@@ -4,7 +4,7 @@ stream {
         server {{ host }};
 {% endfor %}
     }
-    server {
+    server {    
         listen {{ item.port }} {{ item.proto }};
         proxy_pass {{ item.name }};
     }

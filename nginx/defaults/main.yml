@@ -1,2 +1,6 @@
 nginx:
   clean_default: False
+  syslog: False
+  syslog_conf: |
+    access_log syslog:server=127.0.0.1:514;
+    error_log syslog:server=127.0.0.1:514;

@@ -1,5 +1,6 @@
 ---
 openvpn:
+  syslog: False
   mode: 'server'
   dev: 'tun'
   dh: |

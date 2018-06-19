@@ -13,6 +13,7 @@ module(
   resetCounters="on"
   log.syslog="on"
 )
+
 module(
   load="imuxsock"
 )
@@ -21,8 +22,16 @@ input(
   Socket="/dev/log"
   ruleset="local"
 )
+
 module(
   load="imklog"
+)
+
+module(
+  load="imjournal"
+  PersistStateInterval="10"
+  Ratelimit.Interval="10"
+  IgnorePreviousMessages="on"
 )
 
 module(
@@ -46,7 +55,7 @@ input(
 template(
   name="location"
   type="string"
-  string="{{ rsyslog.location }}/%$MYHOSTNAME%/%HOSTNAME%/%$YEAR%/%$MONTH%/messages-%$YEAR%%$MONTH%%$DAY%.log"
+  string="{{ rsyslog.location }}/syslog/%HOSTNAME%/%$YEAR%/%$MONTH%/messages-%$YEAR%%$MONTH%%$DAY%.log"
 )
 
 main_queue(
@@ -55,12 +64,12 @@ main_queue(
   queue.workerThreads="1"
   queue.DiscardMark="10000"
   queue.DiscardSeverity="6"
-  queue.size="110000"
+  queue.size="11000"
 )
 
 ruleset(name="local") {
   *.debug action(
-    type="omudp"
+    type="omfwd"
     target="127.0.0.1"
     port="514"
     queue.type="linkedList"
@@ -68,7 +77,6 @@ ruleset(name="local") {
     queue.DiscardMark="10000"
     queue.DiscardSeverity="6"
     queue.size="11000"
-    timeout="2"
     action.resumeRetryCount="-1"
     action.reportSuspension="on"
     action.reportSuspensionContinuation="on"
@@ -87,7 +95,6 @@ ruleset(name="remote") {
     DirOwner="root"
     DirGroup="root"
     dynaFile="location"
-    template="default"
     queue.type="linkedList"
     queue.workerthreads="1"
     queue.DiscardMark="10000"

@@ -7,8 +7,8 @@
 
 - name: add rsyslog repo
   yum_repository:
-    name: rsyslog repo
-    description: rsyslog repo
+    name: rsyslog
+    description: rsyslog
     baseurl: http://rpms.adiscon.com/v8-stable/epel-$releasever/$basearch
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 

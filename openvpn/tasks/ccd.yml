@@ -16,5 +16,5 @@
     group: openvpn
   notify: restart openvpn
   when: openvpn.mode == "server" and openvpn.ccd is defined
-  items:
+  with_items:
     - "{{ openvpn.ccd }}"

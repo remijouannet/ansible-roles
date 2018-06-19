@@ -1,3 +1,7 @@
+{% if openvpn.syslog %}
+syslog
+{% endif %}
+
 port {{ openvpn.port }}
 
 proto udp
