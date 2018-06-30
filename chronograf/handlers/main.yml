@@ -1,0 +1,5 @@
+---
+- name: restart chronograf
+  service:
+    name: chronograf
+    state: restarted

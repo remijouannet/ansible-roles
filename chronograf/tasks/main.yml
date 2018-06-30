@@ -13,12 +13,12 @@
     baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
-- name: Ensure influxdb is installed
+- name: Ensure chronograf is installed
   yum:
-    name: influxdb
+    name: chronograf
     state: installed
 
 - service:
-    name: influxdb
+    name: chronograf
     state: started
     enabled: yes
