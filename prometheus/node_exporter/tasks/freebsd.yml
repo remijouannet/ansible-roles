@@ -1,0 +1,12 @@
+---
+- name: Install package node_exporter
+  pkgng:
+    name: node_exporter
+    state: present
+
+
+- name: enable node_exporter
+  service: 
+    name: node_exporter 
+    state: started 
+    enabled: yes
