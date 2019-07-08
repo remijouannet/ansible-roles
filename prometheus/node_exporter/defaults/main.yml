@@ -1,2 +1,2 @@
 ---
-
+node_exporter_opts: --collector.textfile.directory=/var/tmp/node_exporter

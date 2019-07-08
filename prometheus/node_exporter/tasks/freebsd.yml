@@ -4,6 +4,11 @@
     name: node_exporter
     state: present
 
+- name: Ensure collector.devstat is enable
+  lineinfile:
+    state: present
+    path: /etc/rc.conf
+    line: 'node_exporter_args="--collector.devstat"'
 
 - name: enable node_exporter
   service: 
