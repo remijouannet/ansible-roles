@@ -1,13 +1,7 @@
 ---
 - name: Import grafana key
   rpm_key:
-    key: https://packagecloud.io/gpg.key
-    state: present
-    validate_certs: no
-
-- name: Import grafana key
-  rpm_key:
-    key: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    key: https://packages.grafana.com/gpg.key
     state: present
     validate_certs: no
 
@@ -15,7 +9,7 @@
   yum_repository:
     name: grafana
     description: grafana
-    baseurl: https://packagecloud.io/grafana/stable/el/$releasever/$basearch
+    baseurl: https://packages.grafana.com/oss/rpm
 
 - name: Install RedHat dependencies
   yum:
