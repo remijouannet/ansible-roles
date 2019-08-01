@@ -4,28 +4,28 @@
     key: http://epel.mirrors.ovh.net/epel/RPM-GPG-KEY-EPEL-7
     state: present
     validate_certs: no
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: add epel repo
   yum_repository:
     name: epel
     description: epel
     mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: add epel-debuginfo repo
   yum_repository:
     name: epel-debuginfo
     description: epel
     mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-debug-7&arch=$basearch
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: add epel-source repo
   yum_repository:
     name: epel-source
     description: epel
     mirrorlist: https://mirrors.fedoraproject.org/metalink?repo=epel-source-7&arch=$basearch
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: Install common tools
   apt: 
@@ -46,6 +46,7 @@
     - nmap
     - apt-transport-https
     - iperf
+    - unzip
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: Install common tools
@@ -67,7 +68,30 @@
     - iperf
     - stress
     - libselinux-python
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+    - unzip
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: Install common tools
+  dnf: 
+    name: "{{ item }}" 
+    state: latest 
+  with_items:
+    - git
+    - vim
+    - gcc
+    - htop
+    - tcpdump
+    - strace
+    - nmap
+    - lsof
+    - man
+    - iotop
+    - iperf
+    - stress
+    - libselinux-python
+    - unzip
+    - tar
+  when: ansible_distribution in ['Fedora']
 
 
 - name: upgrade all packages
@@ -75,7 +99,13 @@
     name: '*'
     update_cache: yes
     state: latest
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: upgrade all packages
+  dnf:
+    name: '*'
+    state: latest
+  when: ansible_distribution in ['Fedora']
 
 
 - name: Update all packages to the latest version
