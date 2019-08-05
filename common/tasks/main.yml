@@ -1,7 +1,7 @@
 ---
 - name: Import epel key
   rpm_key:
-    key: http://epel.mirrors.ovh.net/epel/RPM-GPG-KEY-EPEL-7
+    key: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
     state: present
     validate_certs: no
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
@@ -29,10 +29,9 @@
 
 - name: Install common tools
   apt: 
-    name: "{{ item }}" 
     state: latest 
     update_cache: yes
-  with_items:
+    name:
     - lsof
     - man
     - iotop
@@ -51,10 +50,9 @@
 
 - name: Install common tools
   yum: 
-    name: "{{ item }}" 
     state: latest 
     update_cache: yes
-  with_items:
+    name: 
     - git
     - vim
     - gcc
@@ -73,9 +71,8 @@
 
 - name: Install common tools
   dnf: 
-    name: "{{ item }}" 
     state: latest 
-  with_items:
+    name:
     - git
     - vim
     - gcc
