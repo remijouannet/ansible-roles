@@ -1,0 +1,98 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name: python-selinux
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: create Prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: create Prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    createhome: yes
+    home: /opt/prometheus
+    shell: /sbin/nologin
+    comment: "Prometheus User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/snmp_exporter
+    - /etc/snmp_exporter
+    - /var/log/snmp_exporter
+    - /var/run/snmp_exporter
+    - /var/tmp/snmp_exporter
+
+- name: download gosu executable
+  get_url:
+    url: "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64"
+    dest: "/usr/local/bin/gosu"
+  when: ansible_architecture == 'x86_64'
+
+- name: download gosu executable
+  get_url:
+    url: "https://github.com/tianon/gosu/releases/download/1.10/gosu-armhf"
+    dest: "/usr/local/bin/gosu"
+  when: ansible_architecture == 'armv7l' or ansible_architecture == 'armv6l'
+
+- name: add executable permission
+  file:
+    path: "/usr/local/bin/gosu"
+    state: file
+    mode: "a+x"
+
+- name: download and untar snmp_exporter tarball
+  unarchive:
+    src: "https://github.com/prometheus/snmp_exporter/releases/download/v0.15.0/snmp_exporter-0.15.0.linux-amd64.tar.gz"
+    dest: /opt/snmp_exporter
+    creates: /opt/snmp_exporter/snmp_exporter-0.15.0.linux/snmp_exporter
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+    copy: no
+  when: ansible_architecture == 'x86_64'
+  notify:
+    - restart snmp_exporter
+
+
+- file:
+    src: /opt/snmp_exporter/snmp_exporter-0.15.0.linux-amd64
+    dest: /opt/snmp_exporter/snmp_exporter-0.15.0.linux
+    owner: prometheus
+    group: prometheus
+    state: link
+  when: ansible_architecture == 'x86_64'
+
+
+- name: Create Unit file snmp_exporter
+  template:
+    src: snmp_exporter.service.j2
+    dest: /etc/systemd/system/snmp_exporter.service
+    mode: 0640
+  notify:
+    - restart snmp_exporter
+    - reload systemctl
+
+- name: Start snmp_exporter
+  service:
+    name: snmp_exporter.service
+    state: started
+    enabled: yes

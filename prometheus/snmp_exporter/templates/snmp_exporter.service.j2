@@ -1,0 +1,18 @@
+[Unit]
+Description= snmp_exporter
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+WorkingDirectory=/opt/snmp_exporter/snmp_exporter-0.15.0.linux/
+{% if snmp_exporter_opts is defined %}
+ExecStart=/opt/snmp_exporter/snmp_exporter-0.15.0.linux/snmp_exporter {{ snmp_exporter_opts }}
+{% else %}
+ExecStart=/opt/snmp_exporter/snmp_exporter-0.15.0.linux/snmp_exporter
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target
