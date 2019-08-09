@@ -48,8 +48,18 @@
   with_items:
     - "{{ ssh_key }}"
 
-- copy:
-    src: sudoers
+- name: sshd configuration file update
+  copy: 
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    validate: '/usr/sbin/sshd -T -f %s'
+    owner: root
+    group: root
+    mode: 0600
+  notify: restart sshd
+
+- template:
+    src: sudoers.j2
     dest: /etc/sudoers
     owner: root
     group: root
