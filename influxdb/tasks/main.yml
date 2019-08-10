@@ -13,12 +13,72 @@
     baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
+- template:
+    src: influxdb.conf.j2
+    dest: /etc/influxdb/influxdb.conf
+    owner: influxdb
+    group: influxdb
+    mode: 0600
+  notify: restart influxdb
+
 - name: Ensure influxdb is installed
   yum:
-    name: influxdb
+    name: 
+      - influxdb
+      - python2-pip
     state: installed
+
+- name: install influxdb python package
+  pip:
+    name: influxdb
 
 - service:
     name: influxdb
     state: started
     enabled: yes
+
+- name: test if init password exist
+  stat:
+    path: /root/pass.txt
+  register: init_password
+
+- name: test if init password exist
+  copy:
+    dest: /root/pass.txt
+    content: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') }}"
+    owner: root
+    group: root
+    mode : 0600
+  when: init_password.stat.exists == False
+
+- name: read pass.txt
+  slurp:
+    src: /root/pass.txt
+  register: pass_txt
+
+- name: Create admin user
+  influxdb_user:
+    user_name: admin
+    user_password: "{{ pass_txt['content'] | b64decode }}"
+    admin: yes
+  when: init_password.stat.exists == False
+
+- name: Create database
+  influxdb_database:
+    database_name: "{{ item.name }}"
+    login_username: "admin"
+    login_password: "{{ pass_txt['content'] | b64decode }}"
+  with_items:
+    - "{{ influxdb.databases }}"
+
+- name: Create database
+  influxdb_user:
+    user_name: "{{ item.user }}"
+    user_password: "{{ item.password }}"
+    login_username: "admin"
+    login_password: "{{ pass_txt['content'] | b64decode }}"
+    grants:
+      - database: "{{ item.name }}"
+        privilege: 'ALL'
+  with_items:
+    - "{{ influxdb.databases }}"

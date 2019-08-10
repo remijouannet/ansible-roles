@@ -1,2 +1,7 @@
 influxdb:
   syslog: False
+  databases:
+    - prometheus:
+      name: prometheus
+      user: prometheus
+      password: prometheus
