@@ -1,5 +1,8 @@
 nginx:
   clean_default: False
+  htpasswd:
+      - name: admin
+        password: "azerty123"
   syslog: False
   syslog_conf: |
     access_log syslog:server=127.0.0.1:514;

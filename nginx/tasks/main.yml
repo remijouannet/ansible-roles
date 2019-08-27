@@ -37,6 +37,14 @@
     name: nginx
     state: installed
 
+- pip:
+    name: passlib
+
+- name: Ensure Nginx is installed
+  yum:
+    name: python2-pip
+    state: installed
+
 - import_tasks: pem.yml
   when: nginx.pem is defined
 
@@ -113,6 +121,16 @@
   with_items:
     - "{{ nginx.fileserver }}"
   when: nginx.fileserver is defined
+
+- htpasswd:
+    path: /etc/nginx/htpasswd
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    owner: nginx
+    group: nginx
+    mode: 0600
+  with_items:
+      - "{{ nginx.htpasswd }}"
 
 
 - import_tasks: fileserver.yml
