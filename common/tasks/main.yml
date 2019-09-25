@@ -67,6 +67,8 @@
     - stress
     - libselinux-python
     - unzip
+    - wget
+    - net-tools
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: Install common tools
