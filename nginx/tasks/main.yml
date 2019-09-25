@@ -48,10 +48,6 @@
 - import_tasks: pem.yml
   when: nginx.pem is defined
 
-- service:
-    name: nginx
-    state: started
-    enabled: yes
 
 - name: mkdir stream.d
   file:
@@ -135,3 +131,8 @@
 
 - import_tasks: fileserver.yml
   when: nginx.fileserver is defined
+
+- service:
+    name: nginx
+    state: started
+    enabled: yes

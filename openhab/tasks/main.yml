@@ -20,6 +20,22 @@
         - java-1.8.0-openjdk
     state: installed
 
+- name: Create /etc/default/openhab2
+  template:
+    src: openhab2.j2
+    dest: /etc/default/openhab2
+  notify:
+    - restart_openhab
+
+- name: Create addons.cfg
+  template:
+    src: addons.cfg.j2
+    dest: /etc/openhab2/services/addons.cfg
+    owner: openhab
+    group: openhab
+  notify:
+    - restart_openhab
+
 - service:
     name: openhab2
     state: started

@@ -1,2 +1,6 @@
 ---
 # handlers file for openhab
+- name: restart_openhab
+  service:
+    name: openhab2
+    state: restarted

@@ -69,6 +69,8 @@
     - unzip
     - wget
     - net-tools
+    - python 
+    - python-pip
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: Install common tools
