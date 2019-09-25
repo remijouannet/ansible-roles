@@ -1,0 +1,26 @@
+---
+- name: Import openhab2 key
+  rpm_key:
+    key: https://openhab.jfrog.io/openhab/openhab-linuxpkg-rpm/stable/repodata/repomd.xml.key
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: add openhab2 repo
+  yum_repository:
+    name: openhab2
+    description: openhab2 repo
+    baseurl: https://openhab.jfrog.io/openhab/openhab-linuxpkg-rpm/stable
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: Ensure openhab2 is installed
+  yum:
+    name: 
+        - openhab2
+        - openhab2-addons
+        - java-1.8.0-openjdk
+    state: installed
+
+- service:
+    name: openhab2
+    state: started
+    enabled: yes
