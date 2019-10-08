@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name {{ yum_repo.server_name }};
+    
+    location /repo {
+        autoindex on;
+        root /data/repo;
+    }
+}

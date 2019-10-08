@@ -1,0 +1,66 @@
+---
+# tasks file for yum-repo
+
+### INSTALL NGINX
+- name: Import nginx key
+  rpm_key:
+    key: https://nginx.org/keys/nginx_signing.key
+    state: present
+    validate_certs: no
+
+- name: add nginx repo
+  yum_repository:
+    name: nginx repo
+    description: nginx repo
+    baseurl: http://nginx.org/packages/mainline/rhel/$releasever/$basearch/
+
+- name: Ensure Nginx is installed
+  yum:
+    name: nginx
+    state: installed
+
+- name: Nginx custom configuration
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/nginx.conf"
+    owner: root
+    group: root
+    mode: 0740
+
+- name: mkdir /data/repo
+  file:
+    path: "/data/repo/centos/7" 
+    state: directory
+    owner: data
+    group: data
+    mode: 0774
+    recurse: True
+
+- name: add user to group
+  user:
+    name: nginx
+    groups: data
+    append: yes
+
+- name: set user permissions
+  file:
+    path: /data/
+    owner: data
+    group: data
+    recurse: True
+    mode: 0770
+
+- name: Nginx fileserver configuration
+  template:
+    src: repo.conf.j2
+    dest: "/etc/nginx/conf.d/repo.conf"
+    owner: root
+    group: root
+    mode: 0740
+  notify:
+    - restart nginx
+
+- service:
+    name: nginx
+    state: started
+    enabled: yes
