@@ -118,3 +118,8 @@
 - name: set hostname
   hostname:
     name: "{{ inventory_hostname}}"
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
