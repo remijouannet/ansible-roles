@@ -1,6 +1,6 @@
 server {
     listen 80;
-    {% if yum_repo.server_name %}
+    {% if yum_repo.server_name is defined %}
     server_name {{ yum_repo.server_name }};
     {% endif %}
 
