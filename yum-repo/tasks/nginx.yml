@@ -47,7 +47,6 @@
     path: /data/
     owner: data
     group: data
-    recurse: True
     mode: 0770
 
 - name: Nginx fileserver configuration
