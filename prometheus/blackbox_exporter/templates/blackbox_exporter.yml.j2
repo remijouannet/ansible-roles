@@ -10,9 +10,14 @@ modules:
   icmp:
     prober: icmp
     timeout: 2s
-  dns:
+  dns_a:
     prober: dns
     timeout: 2s
+    query_type: A
+  dns_ptr:
+    prober: dns
+    timeout: 2s
+    query_type: PTR
   tls:
     prober: tcp
     timeout: 5s

@@ -66,7 +66,7 @@
     creates: /opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux/alertmanager
     owner: alertmanager
     group: alertmanager
-    mode: 0740
+    mode: 0711
     copy: no
   when: ansible_architecture == 'x86_64'
   notify:
@@ -79,7 +79,7 @@
     creates: /opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux/alertmanager
     owner: alertmanager
     group: alertmanager
-    mode: 0740
+    mode: 0711
     copy: no
   when: ansible_architecture == 'armv7l'
   notify:
@@ -88,16 +88,16 @@
 - file:
     src: /opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux-amd64
     dest: /opt/alertmanager/alertmanager-{{ alertmanager.version }}.linux
-    owner: prometheus
-    group: prometheus
+    owner: alertmanager
+    group: alertmanager
     state: link
   when: ansible_architecture == 'x86_64'
 
 - file:
     src: /opt/prometheus/alertmanager-{{ alertmanager.version }}.linux-armv7
     dest: /opt/prometheus/alertmanager-{{ alertmanager.version }}.linux
-    owner: prometheus
-    group: prometheus
+    owner: alertmanager
+    group: alertmanager
     state: link
   when: ansible_architecture == 'armv7l'
 

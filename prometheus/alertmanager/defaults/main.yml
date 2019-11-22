@@ -1,4 +1,4 @@
 ---
 alertmanager:
-  start_parameters: --web.listen-address ":9093" --storage.path=/data/alertmanager
-  version: 0.18.0
+  start_parameters: --storage.path=""/data/alertmanager"
+  version: 0.19.0
