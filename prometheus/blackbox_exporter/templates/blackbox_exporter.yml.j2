@@ -13,11 +13,15 @@ modules:
   dns_a:
     prober: dns
     timeout: 2s
-    query_type: A
+    dns:
+      query_name: "www.google.fr"
+      query_type: A
   dns_ptr:
     prober: dns
     timeout: 2s
-    query_type: PTR
+    dns:
+      query_name: "10.1.1.1"
+      query_type: PTR
   tls:
     prober: tcp
     timeout: 5s

@@ -60,9 +60,9 @@
 
 - name: download and untar blackbox_exporter tarball
   unarchive:
-    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v0.11.0/blackbox_exporter-0.11.0.linux-amd64.tar.gz"
+    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v{{ blackbox_exporter.version }}/blackbox_exporter-{{ blackbox_exporter.version }}.linux-amd64.tar.gz"
     dest: /opt/blackbox_exporter
-    creates: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter
+    creates: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux/blackbox_exporter
     owner: prometheus
     group: prometheus
     mode: 0740
@@ -73,9 +73,9 @@
 
 - name: download and untar blackbox_exporter tarball
   unarchive:
-    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v0.11.0/blackbox_exporter-0.11.0.linux-armv7.tar.gz"
+    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v{{ blackbox_exporter.version }}/blackbox_exporter-{{ blackbox_exporter.version }}.linux-armv7.tar.gz"
     dest: /opt/blackbox_exporter
-    creates: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter
+    creates: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux/blackbox_exporter
     owner: prometheus
     group: prometheus
     mode: 0740
@@ -86,9 +86,9 @@
 
 - name: download and untar blackbox_exporter tarball
   unarchive:
-    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v0.11.0/blackbox_exporter-0.11.0.linux-armv6.tar.gz"
+    src: "https://github.com/prometheus/blackbox_exporter/releases/download/v{{ blackbox_exporter.version }}/blackbox_exporter-{{ blackbox_exporter.version }}.linux-armv6.tar.gz"
     dest: /opt/blackbox_exporter
-    creates: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux/blackbox_exporter
+    creates: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux/blackbox_exporter
     owner: prometheus
     group: prometheus
     mode: 0740
@@ -98,24 +98,24 @@
     - restart blackbox_exporter
 
 - file:
-    src: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux-amd64
-    dest: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux
+    src: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux-amd64
+    dest: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux
     owner: prometheus
     group: prometheus
     state: link
   when: ansible_architecture == 'x86_64'
 
 - file:
-    src: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux-armv7
-    dest: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux
+    src: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux-armv7
+    dest: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux
     owner: prometheus
     group: prometheus
     state: link
   when: ansible_architecture == 'armv7l'
 
 - file:
-    src: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux-armv6
-    dest: /opt/blackbox_exporter/blackbox_exporter-0.11.0.linux
+    src: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux-armv6
+    dest: /opt/blackbox_exporter/blackbox_exporter-{{ blackbox_exporter.version }}.linux
     owner: prometheus
     group: prometheus
     state: link
