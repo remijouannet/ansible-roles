@@ -16,7 +16,7 @@
     path: /data/
     owner: data
     group: data
-    mode: 0770
+    mode: 0777
 
 - name: Set authorized key took from vars
   authorized_key:
