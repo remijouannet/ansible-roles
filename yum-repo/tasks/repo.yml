@@ -7,16 +7,30 @@
         - yum-utils
     state: installed
 
-
 - name: run createrepo
   shell: createrepo /data/repo/centos/7
+
+- name: add user data
+  user:
+    name: data
+    createhome: yes
+    state: present
+    groups: data
+    home: /data/repo
 
 - name: set user permissions
   file:
     path: /data/
     owner: data
     group: data
-    mode: 0777
+    mode: 0755
+
+- name: set user permissions
+  file:
+    path: /data/repo
+    owner: data
+    group: data
+    mode: 0700
 
 - name: Set authorized key took from vars
   authorized_key:
