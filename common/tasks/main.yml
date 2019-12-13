@@ -89,7 +89,7 @@
     - iotop
     - iperf
     - stress
-    - libselinux-python
+    - python3-libselinux
     - unzip
     - tar
   when: ansible_distribution in ['Fedora']
