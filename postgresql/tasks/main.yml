@@ -1,0 +1,35 @@
+---
+- name: Import postgresql-{{ postgresql.version }} key
+  rpm_key:
+    key: https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
+    state: present
+    validate_certs: no
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: add postgresql-{{ postgresql.version }} repo
+  yum_repository:
+    name: postgresql-{{ postgresql.version }}_repo
+    description: postgresql-{{ postgresql.version }}_repo
+    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql.version }}/redhat/rhel-7-x86_64/
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/{{ postgresql.version }}/data/pg_hba2.conf
+    owner: postgres
+    group: postgres
+    mode: 0600
+  notify: reload postgresql-{{ postgresql.version }}
+
+- name: Ensure postgresql-{{ postgresql.version }} is installed
+  yum:
+    name: 
+      - postgresql{{ postgresql.version }}-server 
+      - postgresql{{ postgresql.version }}
+      - python-psycopg2
+    state: installed
+
+- service:
+    name: postgresql-{{ postgresql.version }}
+    state: started
+    enabled: yes

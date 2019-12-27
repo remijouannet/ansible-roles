@@ -1,0 +1,3 @@
+postgresql:
+  syslog: False
+  version: 11
