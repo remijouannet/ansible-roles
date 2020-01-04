@@ -51,6 +51,16 @@
   notify:
     - restart spigot
 
+- name: download papermc jar
+  get_url:
+    url: "https://papermc.io/api/v1/paper/{{ spigot.version }}/latest/download"
+    dest: /opt/spigot-{{ spigot.version }}/paper.jar
+    owner: spigot
+    group: spigot
+    mode: 0740
+  notify:
+    - restart spigot
+
 - name: download plugin prometheus
   get_url:
     url: "https://github.com/sladkoff/minecraft-prometheus-exporter/releases/download/v2.0.1/minecraft-prometheus-exporter-2.0.1.jar"

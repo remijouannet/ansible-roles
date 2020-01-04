@@ -1,6 +1,7 @@
 ---
 spigot:
     version: 1.15.1
+    jar: spigot.jar
     plugin_prometheus:
         host: 0.0.0.0
         port: 9225

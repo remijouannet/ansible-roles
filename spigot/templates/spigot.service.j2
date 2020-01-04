@@ -8,7 +8,7 @@ WorkingDirectory=/opt/spigot-{{ spigot.version }}
 User=spigot
 Group=spigot
 Type=simple
-ExecStart=/bin/java -Xms2G -Xmx2G -XX:+UseConcMarkSweepGC -jar /opt/spigot-{{ spigot.version }}/spigot.jar
+ExecStart=/bin/java -Xms2G -Xmx2G -XX:+UseConcMarkSweepGC -jar /opt/spigot-{{ spigot.version }}/{{ spigot.jar }}
 
 [Install]
 WantedBy=multi-user.target
