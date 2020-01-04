@@ -1,0 +1,77 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: "{{ item }}"
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+  with_items:
+      - libselinux-python
+      - java-1.8.0-openjdk
+      - git 
+      - python-twisted-core 
+      - python-psutil 
+      - python-urwid 
+      - python-twisted-web
+
+- name: create spigot group
+  group:
+    name: spigot
+    state: present
+
+- name: create spigot user
+  user:
+    name: spigot
+    group: spigot
+    createhome: yes
+    home: /opt/spigot
+    shell: /sbin/nologin
+    comment: "spigot User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: spigot
+    group: spigot
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/spigot-{{ spigot.version }}
+
+- name: download and untar spigot tarball
+  get_url:
+    url: "https://cdn.getbukkit.org/spigot/spigot-{{ spigot.version }}.jar"
+    dest: /opt/spigot-{{ spigot.version }}/spigot.jar
+    owner: spigot
+    group: spigot
+    mode: 0740
+  notify:
+    - restart spigot
+
+- name: sshd configuration file update
+  copy: 
+    src: "{{ item }}"
+    dest: "/opt/spigot-{{ spigot.version }}/{{ item }}"
+    owner: spigot
+    group: spigot
+    mode: 0740
+  notify: restart spigot
+  with_items:
+      - eula.txt
+      - server.properties
+
+- name: Create Unit file spigot
+  template:
+    src: spigot.service.j2
+    dest: /etc/systemd/system/spigot.service
+    mode: 0640
+  notify:
+    - restart spigot
+    - reload systemctl
+
+- name: Start spigot
+  service:
+    name: spigot.service
+    state: started
+    enabled: yes
