@@ -38,8 +38,20 @@
     mode: 0740
   with_items:
     - /opt/spigot-{{ spigot.version }}
+    - /opt/spigot-{{ spigot.version }}/mcrcon
     - /opt/spigot-{{ spigot.version }}/plugins
     - /opt/spigot-{{ spigot.version }}/plugins/PrometheusExporter
+
+
+- name: download and untar mcrcon tarball
+  unarchive:
+    src: "https://github.com/Tiiffi/mcrcon/releases/download/v0.7.1/mcrcon-0.7.1-linux-x86-64.tar.gz"
+    dest: /opt/spigot/
+    owner: spigot
+    group: spigot
+    mode: 0740
+    copy: no
+  when: ansible_architecture == 'x86_64'
 
 - name: download spigot jar
   get_url:
