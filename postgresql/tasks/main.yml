@@ -13,14 +13,6 @@
     baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql.version }}/redhat/rhel-7-x86_64/
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
-- template:
-    src: pg_hba.conf.j2
-    dest: /var/lib/pgsql/{{ postgresql.version }}/data/pg_hba2.conf
-    owner: postgres
-    group: postgres
-    mode: 0600
-  notify: reload postgresql-{{ postgresql.version }}
-
 - name: Ensure postgresql-{{ postgresql.version }} is installed
   yum:
     name: 
@@ -29,7 +21,23 @@
       - python-psycopg2
     state: installed
 
+- name: postgresql initdb
+  command: 
+    cmd: /usr/pgsql-{{ postgresql.version }}/bin/initdb /var/lib/pgsql/{{ postgresql.version }}/data/
+    creates: /var/lib/pgsql/{{ postgresql.version }}/data/PG_VERSION
+  become_user: postgres
+  become: yes
+
 - service:
     name: postgresql-{{ postgresql.version }}
     state: started
     enabled: yes
+
+- template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/{{ postgresql.version }}/data/pg_hba2.conf
+    owner: postgres
+    group: postgres
+    mode: 0600
+  notify: reload postgresql-{{ postgresql.version }}
+
