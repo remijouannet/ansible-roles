@@ -1,11 +1,15 @@
-stream {
-    upstream {{ item.name }} {
+upstream {{ item.name }} {
 {% for host in item.upstream %}
-        server {{ host }};
+    server {{ host }};
 {% endfor %}
-    }
-    server {    
-        listen {{ item.port }} {{ item.proto }};
-        proxy_pass {{ item.name }};
-    }
 }
+
+server {
+{% if item.proto == 'udp' %}
+    listen {{ item.port }} {{ item.proto }};
+{% else %}
+    listen {{ item.port }};
+{% endif %}
+    proxy_pass {{ item.name }};
+}
+

@@ -5,21 +5,14 @@ pid /run/nginx.pid;
 
 include /usr/share/nginx/modules/*.conf;
 
-include /etc/nginx/stream.d/*.conf;
 
 events {
     worker_connections 1024;
 }
 
-server {
-    listen 127.0.0.1:8080;
-    server_name 127.0.0.1;
-    location /nginx_status {
-        stub_status;
-        access_log off;
-        allow 127.0.0.1;
-        deny all;
-    }
+
+stream {
+    include /etc/nginx/stream.d/*.conf;
 }
 
 http {
@@ -40,8 +33,6 @@ http {
     include             /etc/nginx/mime.types;
     default_type        application/octet-stream;
 
-    include /etc/nginx/conf.d/*.conf;
-
     server {
         listen 127.0.0.1:8080;
         server_name 127.0.0.1;
@@ -50,6 +41,8 @@ http {
             access_log off;
             allow 127.0.0.1;
             deny all;
-        }
     }
+}
+
+    include /etc/nginx/conf.d/*.conf;
 }
