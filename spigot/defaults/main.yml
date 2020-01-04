@@ -1,3 +1,62 @@
 ---
 spigot:
     version: 1.15.1
+    plugin_prometheus:
+        host: 0.0.0.0
+        port: 9225
+        enable_metrics:
+            entities_total: true
+            living_entities_total: true
+            loaded_chunks_total: true
+            jvm_memory: true
+            players_online_total: true
+            players_total: true
+            tps: true
+            player_online: true
+            player_statistic: true
+    server_properties:
+        spawn-protection: 16
+        max-tick-time: 60000
+        query.port: 25565
+        generator-settings: 
+        force-gamemode: false
+        allow-nether: true
+        enforce-whitelist: false
+        gamemode: survival
+        broadcast-console-to-ops: true
+        enable-query: false
+        player-idle-timeout: 0
+        difficulty: easy
+        broadcast-rcon-to-ops: true
+        spawn-monsters: true
+        op-permission-level: 4
+        pvp: true
+        snooper-enabled: true
+        level-type: default
+        hardcore: false
+        enable-command-block: false
+        network-compression-threshold: 256
+        max-players: 20
+        max-world-size: 29999984
+        resource-pack-sha1: 
+        function-permission-level: 2
+        rcon.port: 25575
+        server-port: 25565
+        debug: false
+        server-ip: 
+        spawn-npcs: true
+        allow-flight: false
+        level-name: world
+        view-distance: 10
+        resource-pack: 
+        spawn-animals: true
+        white-list: false
+        rcon.password: 
+        generate-structures: true
+        online-mode: true
+        max-build-height: 256
+        level-seed: 
+        prevent-proxy-connections: false
+        use-native-transport: true
+        motd: A Minecraft Server
+        enable-rcon: false

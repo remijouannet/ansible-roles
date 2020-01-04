@@ -1,0 +1,5 @@
+#Minecraft server properties
+#{{ '%a %b %d %H:%M:%S %Z %Y' | strftime }}
+{% for key, value in spigot.server_properties.items() %}
+{{ key }}={{ value }}
+{% endfor %}

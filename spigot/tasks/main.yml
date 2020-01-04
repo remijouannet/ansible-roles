@@ -38,8 +38,10 @@
     mode: 0740
   with_items:
     - /opt/spigot-{{ spigot.version }}
+    - /opt/spigot-{{ spigot.version }}/plugins
+    - /opt/spigot-{{ spigot.version }}/plugins/PrometheusExporter
 
-- name: download and untar spigot tarball
+- name: download spigot jar
   get_url:
     url: "https://cdn.getbukkit.org/spigot/spigot-{{ spigot.version }}.jar"
     dest: /opt/spigot-{{ spigot.version }}/spigot.jar
@@ -49,17 +51,45 @@
   notify:
     - restart spigot
 
-- name: sshd configuration file update
-  copy: 
-    src: "{{ item }}"
-    dest: "/opt/spigot-{{ spigot.version }}/{{ item }}"
+- name: download plugin prometheus
+  get_url:
+    url: "https://github.com/sladkoff/minecraft-prometheus-exporter/releases/download/v2.0.1/minecraft-prometheus-exporter-2.0.1.jar"
+    dest: "/opt/spigot-{{ spigot.version }}/plugins/"
     owner: spigot
     group: spigot
     mode: 0740
-  notify: restart spigot
-  with_items:
-      - eula.txt
-      - server.properties
+  notify:
+    - restart spigot
+
+- name: push pre validate eula
+  template:
+    src: eula.txt.j2
+    dest: "/opt/spigot-{{ spigot.version }}/eula.txt"
+    mode: 0640
+    owner: spigot
+    group: spigot   
+  notify:
+    - restart spigot
+
+- name: server properties
+  template:
+    src: server.properties.j2
+    dest: "/opt/spigot-{{ spigot.version }}/server.properties"
+    mode: 0640
+    owner: spigot
+    group: spigot  
+  notify:
+    - restart spigot
+
+- name: config prometheus plugin
+  copy:
+    content: "{{ spigot.plugin_prometheus | to_nice_yaml }}"
+    dest: "/opt/spigot-{{ spigot.version }}/plugins/PrometheusExporter/config.yml"
+    mode: 0640
+    owner: spigot
+    group: spigot
+  notify:
+    - restart spigot
 
 - name: Create Unit file spigot
   template:
