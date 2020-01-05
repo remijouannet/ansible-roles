@@ -16,11 +16,42 @@
   yum:
     name: rsyslog
     state: installed
+  when: ansible_system == "Linux"
+
+- name: Ensure Rsyslog is installed
+  pkgng:
+    name: rsyslog
+    state: present
+  when: ansible_system == "FreeBSD"
 
 - service:
     name: rsyslog
     state: started
     enabled: yes
+  when: ansible_system == "Linux"
+
+- name: Rsyslog client configuration
+  template:
+    src: "client.conf.j2"
+    dest: "/usr/local/etc/rsyslog.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart rsyslog
+  when: rsyslog.type == "client" and ansible_system == "FreeBSD"
+
+- service:
+    name: syslogd
+    state: stopped
+    enabled: no
+  when: ansible_system == "FreeBSD"
+
+- service:
+    name: rsyslogd
+    state: started
+    enabled: yes
+  when: ansible_system == "FreeBSD"
 
 - name: Rsyslog client configuration
   template:
