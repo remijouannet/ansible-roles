@@ -52,7 +52,7 @@ spigot:
         resource-pack: 
         spawn-animals: true
         white-list: false
-        rcon.password: 
+        rcon.password: tochange 
         generate-structures: true
         online-mode: true
         max-build-height: 256
@@ -60,4 +60,4 @@ spigot:
         prevent-proxy-connections: false
         use-native-transport: true
         motd: A Minecraft Server
-        enable-rcon: false
+        enable-rcon: true
