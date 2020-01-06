@@ -35,7 +35,7 @@
     src: "client.conf.j2"
     dest: "/usr/local/etc/rsyslog.conf"
     owner: root
-    group: root
+    group: wheel
     mode: 0644
   notify:
     - restart rsyslog
@@ -62,7 +62,7 @@
     mode: 0644
   notify:
     - restart rsyslog
-  when: rsyslog.type == "client"
+  when: rsyslog.type == "client" and ansible_system == "Linux"
 
 - name: Rsyslog server configuration
   template:
