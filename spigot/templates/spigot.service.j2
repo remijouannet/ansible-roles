@@ -8,7 +8,7 @@ WorkingDirectory=/opt/spigot-{{ spigot.version }}
 User=spigot
 Group=spigot
 Type=simple
-ExecStop=/opt/spigot/mcrcon-0.7.1-linux-x86-64/mcrcon -p {{ spigot.server_properties['rcon.password'] }} -w 1 "say Server is restarting" save-all stop 
+ExecStop=/opt/spigot/mcrcon-0.7.1-linux-x86-64/mcrcon -p {{ spigot.server_properties['rcon.password'] }} -w 5 "say Server is restarting" save-all stop 
 ExecStart=/bin/java -Xms4G -Xmx4G -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=100 -XX:+DisableExplicitGC -XX:TargetSurvivorRatio=90 -XX:G1NewSizePercent=50 -XX:G1MaxNewSizePercent=80 -XX:G1MixedGCLiveThresholdPercent=35 -XX:+AlwaysPreTouch -XX:+ParallelRefProcEnabled -jar /opt/spigot-{{ spigot.version }}/{{ spigot.jar }}
 
 [Install]
