@@ -38,7 +38,7 @@
     group: wheel
     mode: 0644
   notify:
-    - restart rsyslog
+    - restart rsyslogd
   when: rsyslog.type == "client" and ansible_system == "FreeBSD"
 
 - service:
@@ -74,3 +74,39 @@
   notify:
     - restart rsyslog
   when: rsyslog.type == "server"
+
+- name: Create a directory if it does not exist
+  file:
+    path: /etc/systemd/system/rsyslog.service.d
+    state: directory
+  when: ansible_system == "Linux"
+
+- name: push override service rsyslog
+  copy:
+    src: 10-enable-syslog-socket.conf
+    dest: /etc/systemd/system/rsyslog.service.d/10-enable-syslog-socket.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_system == "Linux"
+  notify:
+    - reload systemctl
+    - restart rsyslog
+    - restart systemd-journald
+
+- name: Ensure SELinux is set to enforcing mode
+  lineinfile:
+    path: /usr/lib/systemd/system/rsyslog.service
+    regexp: '^;Alias=syslog.service$'
+    line: Alias=syslog.service
+  when: ansible_system == "Linux"
+  notify:
+    - reload systemctl
+    - restart rsyslog
+    - restart systemd-journald
+
+- service:
+    name: rsyslog
+    state: started
+    enabled: yes
+  when: ansible_system == "Linux"
