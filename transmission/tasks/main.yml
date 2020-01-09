@@ -1,0 +1,30 @@
+---
+- name: Ensure Transmission is installed
+  yum:
+    name: ['epel-release'] 
+    state: installed
+
+- name: Ensure Transmission is installed
+  yum:
+    name: ['transmission-daemon', 'transmission-cli', 'transmission-common'] 
+    state: installed
+
+- name: Ensure Transmission is started and enabled on boot.
+  service:
+    name: transmission-daemon
+    state: started
+    enabled: yes
+
+- name: Ensure Transmission is started and enabled on boot.
+  systemd:
+    name: transmission-daemon
+    state: stopped
+
+- name: Copy Transmission configuration
+  copy:
+    content: "{{ transmission.settings | to_nice_json(indent=4, sort_keys=True) }}\n"
+    dest: /var/lib/transmission/.config/transmission-daemon/settings.json
+    mode: 0600
+    owner: transmission
+    group: transmission
+  notify: restart transmission-daemon
