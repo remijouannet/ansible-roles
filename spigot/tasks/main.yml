@@ -127,3 +127,10 @@
     name: spigot.service
     state: started
     enabled: yes
+
+- name: save-all every 20 minutes
+  cron:
+    name: "save_spigot"
+    state: present
+    minute: "*/20"
+    job: "/opt/spigot/mcrcon-0.7.1-linux-x86-64/mcrcon -p {{ spigot.server_properties['rcon.password'] }} save-all"
