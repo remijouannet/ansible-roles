@@ -13,6 +13,13 @@
     baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
+- name: Ensure influxdb is installed
+  yum:
+    name: 
+      - influxdb
+      - python2-pip
+    state: installed
+
 - template:
     src: influxdb.conf.j2
     dest: /etc/influxdb/influxdb.conf
@@ -20,13 +27,6 @@
     group: influxdb
     mode: 0600
   notify: restart influxdb
-
-- name: Ensure influxdb is installed
-  yum:
-    name: 
-      - influxdb
-      - python2-pip
-    state: installed
 
 - name: install influxdb python package
   pip:
