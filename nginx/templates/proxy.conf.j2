@@ -4,11 +4,10 @@ upstream {{ item.name }} {
 {% endfor %}
 }
 
-{% if item.pem %}
+{% if item.pem is defined %}
 server {
-    listen 443;
+    listen {{ item.port_ssl | default("443") }} ssl;
     server_name {{ item.server_name }};
-    ssl on;
     ssl_certificate /etc/nginx/ssl/{{ item.pem }}.crt;
     ssl_certificate_key /etc/nginx/ssl/{{ item.pem }}.key;
     location / {
@@ -21,13 +20,13 @@ server {
 }
 
 server {
-    listen 80;
+    listen {{ item.port | default("80") }};
     server_name {{ item.server_name }};
     rewrite ^ https://$server_name$request_uri? permanent;
 }
 {% else %}
 server {
-    listen 80;
+    listen {{ item.port | default("80") }};
     server_name {{ item.server_name }};
     location / {
         {% if item.auth is defined and item.auth %}

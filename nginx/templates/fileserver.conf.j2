@@ -1,5 +1,5 @@
 server {
-    listen 80;
+    listen {{ item.port | default("80") }};
     server_name {{ item.server_name }};
     
 {% for loc in item.locations %}
