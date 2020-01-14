@@ -1,4 +1,4 @@
 ---
 prometheus:
   start_parameters: -storage.local.path=/data/prometheus -web.listen-address ":9090" -alertmanager.url=http://127.0.0.1:9093/
-  version: 2.14.0
+  version: 2.15.2
