@@ -1,0 +1,19 @@
+---
+certbot:
+  ini:
+    - name: test
+      domain: "test.com"
+      keep: True
+      rsa-key-size: 4096
+      email: test@test.com
+      no-eff-email: True
+      agree-tos: True
+      dns-ovh: True
+      dns-ovh-credentials: /etc/letsencrypt/dnsovh.ini
+  ini_plugin:
+    - name: dnsovh
+      dns_ovh_endpoint: ovh-eu
+      dns_ovh_application_key: aaaaaaaaaaaaa
+      dns_ovh_application_secret: aaaaaaaaaaaa
+      dns_ovh_consumer_key: aaaaaaaaaaa
+

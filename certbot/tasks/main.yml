@@ -1,0 +1,43 @@
+---
+- name: Ensure certbot is installed
+  yum:
+    name: ['certbot', 'python2-certbot-dns-ovh']
+    state: installed
+
+
+- name: push certbot conf
+  template:
+    src: certbot.ini.j2
+    dest: "/etc/letsencrypt/{{ item.name }}.ini"
+    mode: 0600
+    owner: root
+    group: root
+  with_items:
+    - "{{ certbot.ini }}"
+
+- name: push certbot plugins conf
+  template:
+    src: certbot.ini.j2
+    dest: "/etc/letsencrypt/{{ item.name }}.ini"
+    mode: 0600
+    owner: root
+    group: root
+  with_items:
+    - "{{ certbot.ini_plugin }}"
+
+- name: execute certonly
+  command: "certbot certonly -c /etc/letsencrypt/{{ item.name }}.ini"
+  with_items:
+    - "{{ certbot.ini }}"
+  notify:
+    - reload nginx
+
+- name: cron for every cert
+  cron:
+    name: "cert_bot_{{ item.name }}"
+    state: present
+    minute: "1"
+    minute: "1"
+    job: "certbot certonly -c /etc/letsencrypt/{{ item.name }}.ini && systemctl reload nginx"
+  with_items:
+    - "{{ certbot.ini }}"

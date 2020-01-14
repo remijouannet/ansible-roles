@@ -27,8 +27,8 @@
 
 - name: add nginx repo
   yum_repository:
-    name: nginx repo
-    description: nginx repo
+    name: nginx
+    description: nginx
     baseurl: http://nginx.org/packages/mainline/rhel/$releasever/$basearch/
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
