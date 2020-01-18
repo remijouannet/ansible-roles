@@ -61,9 +61,9 @@
 
 - name: download and untar snmp_exporter tarball
   unarchive:
-    src: "https://github.com/prometheus/snmp_exporter/releases/download/v0.15.0/snmp_exporter-0.15.0.linux-amd64.tar.gz"
+    src: "https://github.com/prometheus/snmp_exporter/releases/download/v0.16.1/snmp_exporter-0.16.1.linux-amd64.tar.gz"
     dest: /opt/snmp_exporter
-    creates: /opt/snmp_exporter/snmp_exporter-0.15.0.linux/snmp_exporter
+    creates: /opt/snmp_exporter/snmp_exporter-0.16.1.linux/snmp_exporter
     owner: prometheus
     group: prometheus
     mode: 0740
@@ -74,8 +74,8 @@
 
 
 - file:
-    src: /opt/snmp_exporter/snmp_exporter-0.15.0.linux-amd64
-    dest: /opt/snmp_exporter/snmp_exporter-0.15.0.linux
+    src: /opt/snmp_exporter/snmp_exporter-0.16.1.linux-amd64
+    dest: /opt/snmp_exporter/snmp_exporter-0.16.1.linux
     owner: prometheus
     group: prometheus
     state: link

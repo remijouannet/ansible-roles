@@ -7,11 +7,11 @@ After=basic.target network.target
 User=prometheus
 Group=prometheus
 Type=simple
-WorkingDirectory=/opt/snmp_exporter/snmp_exporter-0.15.0.linux/
+WorkingDirectory=/opt/snmp_exporter/snmp_exporter-0.16.1.linux/
 {% if snmp_exporter_opts is defined %}
-ExecStart=/opt/snmp_exporter/snmp_exporter-0.15.0.linux/snmp_exporter {{ snmp_exporter_opts }}
+ExecStart=/opt/snmp_exporter/snmp_exporter-0.16.1.linux/snmp_exporter {{ snmp_exporter_opts }}
 {% else %}
-ExecStart=/opt/snmp_exporter/snmp_exporter-0.15.0.linux/snmp_exporter
+ExecStart=/opt/snmp_exporter/snmp_exporter-0.16.1.linux/snmp_exporter
 {% endif %}
 
 [Install]
