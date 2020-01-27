@@ -33,7 +33,7 @@
     state: directory
     owner: data
     group: data
-    mode: 0774
+    mode: 0775
     recurse: True
 
 - name: add user to group
@@ -47,7 +47,7 @@
     path: /data/
     owner: data
     group: data
-    mode: 0770
+    mode: 0755
 
 - name: Nginx fileserver configuration
   template:

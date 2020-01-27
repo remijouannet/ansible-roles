@@ -30,7 +30,8 @@
     path: /data/repo
     owner: data
     group: data
-    mode: 0700
+    recurse: True
+    mode: 0775
 
 - name: Set authorized key took from vars
   authorized_key:

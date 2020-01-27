@@ -3,9 +3,6 @@ server {
     {% if yum_repo.server_name is defined %}
     server_name {{ yum_repo.server_name }};
     {% endif %}
-
-    location /repo {
-        autoindex on;
-        root /data/;
-    }
+    autoindex on;
+    root /data/repo/;
 }
