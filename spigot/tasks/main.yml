@@ -41,6 +41,7 @@
     - /opt/spigot-{{ spigot.version }}/mcrcon
     - /opt/spigot-{{ spigot.version }}/plugins
     - /opt/spigot-{{ spigot.version }}/plugins/PrometheusExporter
+    - /opt/spigot/backup
 
 
 - name: download and untar mcrcon tarball
@@ -128,9 +129,23 @@
     state: started
     enabled: yes
 
-- name: save-all every 20 minutes
+- name: push backup script
+  template:
+    src: backup_spigot.sh.j2
+    dest: /opt/spigot/backup_spigot.sh
+    mode: 0755
+
+- name: save-all every hours
   cron:
     name: "save_spigot"
     state: present
     minute: "1"
-    job: "/opt/spigot/mcrcon-0.7.1-linux-x86-64/mcrcon -p {{ spigot.server_properties['rcon.password'] }} save-all"
+    job: "/opt/spigot/mcrcon-0.7.1-linux-x86-64/mcrcon -p {{ spigot.server_properties['rcon.password'] }} save-all | logger -t save_spigot"
+
+- name: backup every day
+  cron:
+    name: "backup_spigot"
+    state: present
+    minute: "15"
+    hour: "8"
+    job: "/opt/spigot/backup_spigot.sh | logger -t backup_spigot"
