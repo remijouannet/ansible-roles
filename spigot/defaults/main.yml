@@ -4,6 +4,7 @@ spigot:
     jar: spigot.jar
     xmx: 4G
     xms: 4G
+    backup_retention: 6
     plugin_prometheus:
         host: 0.0.0.0
         port: 9225

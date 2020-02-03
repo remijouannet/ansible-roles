@@ -5,4 +5,4 @@ now=$(date +"%d%m%Y_%H%M%S")
 cd /opt/
 tar czvf /opt/spigot/backup/spigot-{{ spigot.version }}_$now.tar.gz spigot-{{ spigot.version }}/
 
-find /opt/spigot/backup/ -mtime +6 -delete;
+find /opt/spigot/backup/ -mtime +{{ spigot.backup_retention }} -delete;
