@@ -1,0 +1,12 @@
+---
+- name: jitsi-meet Add key
+  apt_key: 
+    url: https://download.jitsi.org/jitsi-key.gpg.key
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: Repo jitsi-meet
+  apt_repository:
+    repo: deb https://download.jitsi.org stable/
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
