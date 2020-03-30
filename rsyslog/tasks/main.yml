@@ -16,7 +16,13 @@
   yum:
     name: rsyslog
     state: installed
-  when: ansible_system == "Linux"
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: Ensure Rsyslog is installed
+  apt:
+    state: latest 
+    update_cache: yes
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: Ensure Rsyslog is installed
   pkgng:

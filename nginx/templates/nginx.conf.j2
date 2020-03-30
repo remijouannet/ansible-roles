@@ -12,6 +12,12 @@ events {
 
 
 stream {
+    log_format basic '$remote_addr [$time_local] '
+                     '$protocol $status $bytes_sent $bytes_received '
+                     '$session_time';
+
+    access_log syslog:server=127.0.0.1:514 basic;
+
     include /etc/nginx/stream.d/*.conf;
 }
 
@@ -21,7 +27,8 @@ http {
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
     {% if nginx.syslog %}
-    {{ nginx.syslog_conf }}
+    access_log syslog:server=127.0.0.1:514;
+    error_log syslog:server=127.0.0.1:514;    
     {% endif %}
 
     sendfile            on;

@@ -128,9 +128,11 @@
   with_items:
       - "{{ nginx.htpasswd }}"
 
-
 - import_tasks: fileserver.yml
   when: nginx.fileserver is defined
+
+- name: test nginx configuration
+  shell: /sbin/nginx -t
 
 - service:
     name: nginx
