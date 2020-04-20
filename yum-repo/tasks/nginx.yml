@@ -33,7 +33,7 @@
     state: directory
     owner: data
     group: data
-    mode: 0775
+    mode: 0740
     recurse: True
 
 - name: add user to group

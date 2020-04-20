@@ -31,7 +31,7 @@
     owner: data
     group: data
     recurse: True
-    mode: 0775
+    mode: 0740
 
 - name: Set authorized key took from vars
   authorized_key:
