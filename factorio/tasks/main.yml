@@ -1,0 +1,97 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: "{{ item }}"
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+  with_items:
+      - libselinux-python
+      - python-twisted-core 
+      - python-psutil 
+      - python-urwid 
+      - python-twisted-web
+      
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name: python-selinux
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: create factorio group
+  group:
+    name: factorio
+    state: present
+
+- name: create factorio user
+  user:
+    name: factorio
+    group: factorio
+    createhome: yes
+    home: /opt/factorio
+    shell: /sbin/nologin
+    comment: "factorio User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: factorio
+    group: factorio
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/factorio/{{ factorio.save_name }}
+    - /opt/factorio/backup
+
+
+- name: download factorio bin
+  unarchive:
+    url: "https://factorio.com/get-download/{{ factorio.version }}/headless/linux64"
+    dest: /opt/factorio/
+    creates: /opt/factorio/factorio
+    owner: factorio
+    group: factorio
+    mode: 0740
+    copy: no
+  notify:
+    - restart factorio
+
+- name: server settings
+  template:
+    src: server_settings.json.j2
+    dest: "/opt/factorio/server_settings.json"
+    mode: 0640
+    owner: factorio
+    group: factorio  
+  notify:
+    - restart factorio
+
+- name: Create Unit file factorio
+  template:
+    src: factorio.service.j2
+    dest: /etc/systemd/system/factorio.service
+    mode: 0640
+  notify:
+    - restart factorio
+    - reload systemctl
+
+- name: Start factorio
+  service:
+    name: factorio.service
+    state: started
+    enabled: yes
+
+- name: push backup script
+  template:
+    src: backup_factorio.sh.j2
+    dest: /opt/factorio/backup_factorio.sh
+    mode: 0755
+
+- name: backup every day
+  cron:
+    name: "backup_factorio"
+    state: present
+    minute: "15"
+    hour: "8"
+    job: "/opt/factorio/backup_factorio.sh | logger -t backup_factorio"

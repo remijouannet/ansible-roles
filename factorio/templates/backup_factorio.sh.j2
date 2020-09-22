@@ -1,0 +1,8 @@
+#!/bin/bash -x
+
+now=$(date +"%d%m%Y_%H%M%S")
+
+cd /opt/
+tar czvf /opt/factorio/backup/factorio_$now.tar.gz factorio/
+
+find /opt/factorio/backup/ -mtime +{{ factorio.backup_retention }} -delete;
