@@ -13,9 +13,12 @@
       
 - name: install libselinux-python binary for Ansible to work
   apt:
-    name: python-selinux
+    name: "{{ item }}"
     state: present
   when: ansible_distribution in ['Debian', 'Ubuntu']
+  with_items:
+    - python-selinux
+    - xz-utils
 
 - name: create factorio group
   group:
@@ -41,26 +44,30 @@
     recurse: yes
     mode: 0740
   with_items:
+    - /opt/factorio/
     - /opt/factorio/{{ factorio.save_name }}
     - /opt/factorio/backup
 
 
 - name: download factorio bin
-  unarchive:
+  get_url:
     url: "https://factorio.com/get-download/{{ factorio.version }}/headless/linux64"
+    dest: /opt/factorio/factorio.tar.xz
+
+- name: unarchive factorio
+  unarchive:
+    src: /opt/factorio/factorio.tar.xz
     dest: /opt/factorio/
     creates: /opt/factorio/factorio
+    remote_src: yes
+    mode: 0740
     owner: factorio
     group: factorio
-    mode: 0740
-    copy: no
-  notify:
-    - restart factorio
 
-- name: server settings
+- name: srerver settings
   template:
-    src: server_settings.json.j2
-    dest: "/opt/factorio/server_settings.json"
+    src: server-settings.json.j2
+    dest: "/opt/factorio/server-settings.json"
     mode: 0640
     owner: factorio
     group: factorio  
@@ -75,6 +82,14 @@
   notify:
     - restart factorio
     - reload systemctl
+
+- name: push create_save script
+  template:
+    src: create_save.sh.j2
+    dest: /opt/factorio/create_save.sh
+    owner: factorio
+    group: factorio  
+    mode: 0755
 
 - name: Start factorio
   service:

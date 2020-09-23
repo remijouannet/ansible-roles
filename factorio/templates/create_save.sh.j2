@@ -1,0 +1,4 @@
+#!/bin/bash
+
+test -f /opt/factorio/{{ factorio.save_name }}/{{ factorio.save_name }}.zip || \
+    /opt/factorio/factorio/bin/x64/factorio --create /opt/factorio/{{ factorio.save_name }}/{{ factorio.save_name }}.zip
