@@ -2,7 +2,7 @@
 
 now=$(date +"%d%m%Y_%H%M%S")
 
-cd /opt/
-tar czvf /opt/factorio/backup/factorio_$now.tar.gz factorio/
+cd /opt/factorio
+tar czvf /opt/factorio/backup/factorio_$now.tar.gz /opt/factorio/{{ factorio.save_name }}/
 
 find /opt/factorio/backup/ -mtime +{{ factorio.backup_retention }} -delete;

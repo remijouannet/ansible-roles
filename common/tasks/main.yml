@@ -46,6 +46,7 @@
     - apt-transport-https
     - iperf
     - unzip
+    - python-apt
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: Install common tools
@@ -111,7 +112,7 @@
 
 - name: Update all packages to the latest version
   apt:
-    upgrade: yes
+    upgrade: True
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
 
