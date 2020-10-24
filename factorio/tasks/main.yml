@@ -46,7 +46,6 @@
     - /opt/factorio/{{ factorio.save_name }}
     - /opt/factorio/backup
 
-
 - name: download factorio bin
   get_url:
     url: "https://factorio.com/get-download/{{ factorio.version }}/headless/linux64"
@@ -58,6 +57,21 @@
     dest: /opt/factorio/
     creates: /opt/factorio/factorio
     remote_src: yes
+    mode: 0755
+    owner: factorio
+    group: factorio
+
+- name: download YARM mods
+  get_url:
+    url: "https://github.com/narc0tiq/YARM/releases/download/v0.8.102/YARM_0.8.102.zip"
+    dest: /opt/factorio/factorio/mods/YARM_0.8.102.zip
+    owner: factorio
+    group: factorio
+
+- name: download graftorio2 mods
+  get_url:
+    url: "https://github.com/remijouannet/graftorio2/releases/download/0.0.9/graftorio2_0.0.9.zip"
+    dest: /opt/factorio/factorio/mods/graftorio2_0.0.9.zip
     mode: 0755
     owner: factorio
     group: factorio
