@@ -62,7 +62,7 @@
     owner: factorio
     group: factorio
 
-- name: srerver settings
+- name: server settings
   template:
     src: server-settings.json.j2
     dest: "/opt/factorio/server-settings.json"
