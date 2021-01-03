@@ -3,6 +3,9 @@ factorio:
   version: latest
   backup_retention: 6
   save_name: save1
+  rcon:
+    rcon_bind: 127.0.0.1:27015
+    rcon_password: test1234
   server_settings:
     name: factorio 64e417c7
     description: 64e417c7-3dc6-4e3a-a7e6-d88b63d14d80

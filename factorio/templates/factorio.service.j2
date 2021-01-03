@@ -9,7 +9,8 @@ User=factorio
 Group=factorio
 Type=simple
 ExecStartPre=/opt/factorio/create_save.sh
-ExecStart=/opt/factorio/factorio/bin/x64/factorio --start-server /opt/factorio/{{ factorio.save_name }}/{{ factorio.save_name }}.zip --server-settings /opt/factorio/server-settings.json
+ExecStart=/opt/factorio/factorio/bin/x64/factorio --start-server /opt/factorio/{{ factorio.save_name }}/{{ factorio.save_name }}.zip --server-settings /opt/factorio/server-settings.json --rcon-bind {{ factorio.rcon.rcon_bind }} --rcon-password {{ factorio.rcon.rcon_password }}
+
 
 [Install]
 WantedBy=multi-user.target
