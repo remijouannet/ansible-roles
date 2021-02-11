@@ -1,0 +1,78 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name: python-selinux
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: create Prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: create Prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    createhome: yes
+    home: /opt/prometheus
+    shell: /sbin/nologin
+    comment: "Prometheus User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/mikrotik-exporter
+    - /etc/mikrotik-exporter
+    - /var/log/mikrotik-exporter
+    - /var/run/mikrotik-exporter
+
+- name: download and untar mikrotik-exporter tarball
+  get_url:
+    url: "https://github.com/hatamiarash7/Mikrotik-Exporter/releases/download/{{ mikrotik-exporter.version }}/mikrotik-exporter_linux_amd64"
+    dest: /opt/mikrotik-exporter/mikrotik-exporter_linux_amd64
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+    checksum: md5:a65e517e2ad36ccdc87f514513d9bc6b
+  when: ansible_architecture == 'x86_64'
+  notify:
+    - restart mikrotik-exporter
+
+- name: Create config mikrotik-exporter
+  template:
+    src: config.yml.j2
+    dest: /opt/mikrotik-exporter/config.yml
+    owner: prometheus
+    group: prometheus
+    mode: 0640
+  notify:
+    - restart mikrotik-exporter
+
+- name: Create Unit file mikrotik-exporter
+  template:
+    src: mikrotik-exporter.service.j2
+    dest: /etc/systemd/system/mikrotik-exporter.service
+    mode: 0640
+  notify:
+    - restart mikrotik-exporter
+    - reload systemctl
+
+- name: Start mikrotik-exporter
+  service:
+    name: mikrotik-exporter.service
+    state: started
+    enabled: yes

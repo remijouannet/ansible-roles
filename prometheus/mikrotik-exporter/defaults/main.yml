@@ -1,0 +1,13 @@
+---
+mikrotik-exporter:
+  version: 1.2.4
+  config:
+    devices:
+      - name: home
+        address: 192.168.1.1
+        user: foo
+        password: bar
+    features:
+      routes: true
+      monitor: true
+      ipsec: true
