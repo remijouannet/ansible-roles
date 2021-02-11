@@ -1,6 +1,7 @@
 ---
-mikrotik-exporter:
+mikrotik_exporter:
   version: 1.2.4
+  checksum: md5:a65e517e2ad36ccdc87f514513d9bc6b
   config:
     devices:
       - name: home

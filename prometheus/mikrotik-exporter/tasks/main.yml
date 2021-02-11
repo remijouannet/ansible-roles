@@ -40,14 +40,15 @@
     - /var/log/mikrotik-exporter
     - /var/run/mikrotik-exporter
 
-- name: download and untar mikrotik-exporter tarball
+
+- name: download mikrotik exporter
   get_url:
-    url: "https://github.com/hatamiarash7/Mikrotik-Exporter/releases/download/{{ mikrotik-exporter.version }}/mikrotik-exporter_linux_amd64"
+    url: https://github.com/hatamiarash7/Mikrotik-Exporter/releases/download/{{ mikrotik_exporter.version }}/mikrotik-exporter_linux_amd64
     dest: /opt/mikrotik-exporter/mikrotik-exporter_linux_amd64
     owner: prometheus
     group: prometheus
     mode: 0740
-    checksum: md5:a65e517e2ad36ccdc87f514513d9bc6b
+    checksum: "{{ mikrotik_exporter.checksum }}"
   when: ansible_architecture == 'x86_64'
   notify:
     - restart mikrotik-exporter
