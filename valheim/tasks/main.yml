@@ -1,0 +1,62 @@
+---
+     
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name:
+      - python-selinux
+      - xz-utils
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+    
+- name: create valheim group
+  group:
+    name: valheim
+    state: present
+
+- name: create valheim user
+  user:
+    name: valheim
+    group: valheim
+    createhome: yes
+    home: /opt/valheim
+    shell: /sbin/nologin
+    comment: "valheim User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: valheim
+    group: valheim
+    recurse: yes
+    mode: 0755
+  with_items:
+    - /opt/valheim/
+
+- name: install valheim
+  shell: steamcmd +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +exit
+
+- name: Create Unit file valheim
+  template:
+    src: start_server2.sh.j2
+    dest: /opt/valheim/start_server2.sh
+    mode: 0640
+  notify:
+    - restart valheim
+    - reload systemctl
+
+- name: Create Unit file valheim
+  template:
+    src: valheim.service.j2
+    dest: /etc/systemd/system/valheim.service
+    mode: 0640
+  notify:
+    - restart valheim
+    - reload systemctl
+
+- name: Start valheim
+  service:
+    name: valheim.service
+    state: started
+    enabled: yes
