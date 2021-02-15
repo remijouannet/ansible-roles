@@ -1,0 +1,47 @@
+---
+- name: Install dependencies
+  package:
+    name: lib32gcc1
+    state: latest
+
+- name: Create steam system user
+  user:
+    name: steam
+    comment: "SteamCMD system user"
+    create_home: true
+    shell: /bin/bash
+    home: /opt/steam
+
+- name: Download SteamCMD installer
+  unarchive:
+    src: "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
+    dest: /opt/steam
+    remote_src: yes
+    owner: steam
+    group: steam
+
+- name: Set permissions for SteamCMD directory
+  file:
+    path: /opt/steam
+    owner: steam
+    group: steam
+    recurse: true
+
+- name: Set permissions on SteamCMD script
+  file:
+    path: /opt/steam/steamcmd.sh
+    owner: steam
+    group: steam
+    mode: 0770
+
+- name: Run the installer script
+  shell: su - steam -c '/opt/steam/steamcmd.sh +quit'
+
+- name: Include SteamCMD in OS bin path
+  file:
+    src: /opt/steam/steamcmd.sh
+    dest: /usr/bin/steamcmd
+    owner: root
+    group: steamcmd
+    mode: 0755
+    state: link
