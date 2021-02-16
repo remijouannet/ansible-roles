@@ -105,7 +105,7 @@
     path: /usr/lib/systemd/system/rsyslog.service
     regexp: '^;Alias=syslog.service$'
     line: Alias=syslog.service
-  when: ansible_system == "Linux"
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
   notify:
     - reload systemctl
     - restart rsyslog
