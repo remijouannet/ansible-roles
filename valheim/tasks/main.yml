@@ -9,6 +9,13 @@
     state: present
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
+- name: accept steam license
+  debconf:
+    name: "steam"
+    question: "steam/question"
+    value: "I AGREE"
+    vtype: "select"
+
 - name: Enable i386 architecture
   command: dpkg --add-architecture i386
   when: ansible_distribution in ['Debian']
@@ -75,6 +82,8 @@
 - name: Create Unit file valheim
   template:
     src: start_server2.sh.j2
+    owner: valheim
+    group: valheim
     dest: /opt/valheim/start_server2.sh
     mode: 0740
   notify:
