@@ -5,9 +5,33 @@
     name:
       - python-selinux
       - xz-utils
+      - python-apt
     state: present
   when: ansible_distribution in ['Debian', 'Ubuntu']
-    
+
+- name: Enable i386 architecture
+  command: dpkg --add-architecture i386
+  when: ansible_distribution in ['Debian']
+
+- name: add non-free repository
+  apt_repository: 
+    repo: "{{ item }}"
+    state: present 
+    filename: non-free
+    update_cache: yes
+  with_items:
+    - "deb http://deb.debian.org/debian/ {{ ansible_lsb['codename'] }} non-free"
+    - "deb http://deb.debian.org/debian/ {{ ansible_lsb['codename'] }}-updates non-free"
+    - "deb http://security.debian.org/debian-security {{ ansible_lsb['codename'] }}/updates non-free"
+  when: ansible_distribution in ['Debian']
+
+- name: install steamcmd
+  apt:
+    name: steamcmd:i386
+    state: present
+    update_cache: yes
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
 - name: create valheim group
   group:
     name: valheim
@@ -35,13 +59,24 @@
     - /opt/valheim/
 
 - name: install valheim
-  shell: steamcmd +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +exit
+  shell: /usr/games/steamcmd +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +exit
+
+- name: fix perm
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: valheim
+    group: valheim
+    recurse: yes
+    mode: 0755
+  with_items:
+    - /opt/valheim/
 
 - name: Create Unit file valheim
   template:
     src: start_server2.sh.j2
     dest: /opt/valheim/start_server2.sh
-    mode: 0640
+    mode: 0740
   notify:
     - restart valheim
     - reload systemctl
