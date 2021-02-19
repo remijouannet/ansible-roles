@@ -64,6 +64,7 @@
     mode: 0755
   with_items:
     - /opt/valheim/
+    - /opt/valheim/backup
 
 - name: install valheim
   shell: /usr/games/steamcmd +login anonymous +force_install_dir /opt/valheim +app_update 896660 validate +exit
@@ -78,14 +79,15 @@
     mode: 0755
   with_items:
     - /opt/valheim/
+    - /opt/valheim/backup
 
-- name: Create Unit file valheim
+- name: Create startup script valheim
   template:
     src: start_server2.sh.j2
     owner: valheim
     group: valheim
     dest: /opt/valheim/start_server2.sh
-    mode: 0740
+    mode: 0755
   notify:
     - restart valheim
     - reload systemctl
@@ -94,7 +96,6 @@
   template:
     src: valheim.service.j2
     dest: /etc/systemd/system/valheim.service
-    mode: 0640
   notify:
     - restart valheim
     - reload systemctl
@@ -104,3 +105,20 @@
     name: valheim.service
     state: started
     enabled: yes
+
+- name: push backup script
+  template:
+    src: backup_valheim.sh.j2
+    dest: /opt/valheim/backup_valheim.sh
+    mode: 0755
+    owner: valheim
+    group: valheim
+
+- name: backup every day
+  cron:
+    name: "backup_valheim"
+    state: present
+    minute: "15"
+    hour: "8"
+    user: "valheim"
+    job: "/opt/valheim/backup_valheim.sh | logger -t backup_valheim"

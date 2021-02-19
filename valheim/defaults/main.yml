@@ -2,3 +2,4 @@
 valheim:
   password: toto
   name: toto
+  backup_retention: 15
