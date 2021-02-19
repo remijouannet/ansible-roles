@@ -1,0 +1,8 @@
+#!/bin/bash -x
+
+now=$(date +"%d%m%Y_%H%M%S")
+
+cd /opt/
+tar czvf /opt/valheim/backup/valheim_$now.tar.gz /opt/valheim/.config/unity3d/IronGate/Valheim
+
+find /opt/valheim/backup/ -mtime +{{ valheim.backup_retention }} -delete;
