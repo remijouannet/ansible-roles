@@ -3,11 +3,20 @@
   yum:
     name: ['epel-release'] 
     state: installed
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: Ensure Transmission is installed
   yum:
     name: ['transmission-daemon', 'transmission-cli', 'transmission-common'] 
     state: installed
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: Ensure transmission is installed
+  apt:
+    name: ['transmission-daemon', 'transmission-cli', 'transmission-common'] 
+    state: latest 
+    update_cache: yes
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: Ensure Transmission is started and enabled on boot.
   service:
@@ -28,3 +37,14 @@
     owner: transmission
     group: transmission
   notify: restart transmission-daemon
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: Copy Transmission configuration
+  copy:
+    content: "{{ transmission.settings | to_nice_json(indent=4, sort_keys=True) }}\n"
+    dest: /etc/transmission-daemon/settings.json
+    mode: 0600
+    owner: debian-transmission
+    group: debian-transmission
+  notify: restart transmission-daemon
+  when: ansible_distribution in ['Debian', 'Ubuntu']
