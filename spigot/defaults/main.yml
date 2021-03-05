@@ -1,6 +1,6 @@
 ---
 spigot:
-    version: 1.15.1
+    version: 1.16.5
     jar: spigot.jar
     xmx: 4G
     xms: 4G
