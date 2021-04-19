@@ -1,0 +1,68 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name: python-selinux
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: create ur_last_fm group
+  group:
+    name: ur_last_fm
+    state: present
+
+- name: create ur_last_fm user
+  user:
+    name: ur_last_fm
+    group: ur_last_fm
+    createhome: yes
+    home: /opt/ur_last_fm
+    shell: /sbin/nologin
+    comment: "ur_last_fm User"
+    state: present
+
+- name: download and untar blackbox_exporter tarball
+  unarchive:
+    src: https://github.com/remijouannet/ur-last-fm/releases/download/{{ ur_last_fm.version }}/ur-last-fm_linux_amd64_v0.1.zip
+    dest: /opt/ur_last_fm
+    creates: /opt/ur_last_fm/ur-last-fm_linux_amd64_{{ ur_last_fm.version }}/ur-last-fm_{{ ur_last_fm.version }}
+    owner: ur_last_fm
+    group: ur_last_fm
+    mode: 0740
+    copy: no
+  when: ansible_architecture == 'x86_64'
+
+- name: Create config ur-last-fm
+  template:
+    src: ur-last-fm.json.j2
+    dest: /opt/ur_last_fm/ur-last-fm.json
+    owner: ur_last_fm
+    group: ur_last_fm
+    mode: 0640
+
+- name: Create Unit file ur-last-fm
+  template:
+    src: ur-last-fm.service.j2
+    dest: /etc/systemd/system/ur-last-fm.service
+    mode: 0640
+  notify:
+    - reload systemctl
+
+- name: Create Timer Unit file ur-last-fm
+  template:
+    src: ur-last-fm.timer.j2
+    dest: /etc/systemd/system/ur-last-fm.timer
+    mode: 0640
+  notify:
+    - reload systemctl
+
+- name: Start ur-last-fm
+  service:
+    name: ur-last-fm.timer
+    state: started
+    enabled: yes

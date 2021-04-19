@@ -1,0 +1,9 @@
+---
+ur_last_fm:
+  version: v0.1
+  config:
+    token: "aaaaaaaaaa"
+    secret: "aaaaaaa"
+    username: "username"
+    password: "password"
+    conn: "postgresql://lastfm:password@127.0.0.1:8081/lastfm?sslmode=disable"

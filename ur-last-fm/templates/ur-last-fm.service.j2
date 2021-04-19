@@ -1,0 +1,13 @@
+[Unit]
+Description= ur-last-vm
+Wants=postgresql-11.service
+After=postgresql-11.service
+
+[Service]
+User=ur_last_fm
+Group=ur_last_fm
+Type=oneshot
+ExecStart=/opt/ur_last_fm/ur-last-fm_linux_amd64_{{ ur_last_fm.version }}/ur-last-fm_{{ ur_last_fm.version }} -config /opt/ur_last_fm/ur-last-fm.json
+
+[Install]
+WantedBy=multi-user.target
