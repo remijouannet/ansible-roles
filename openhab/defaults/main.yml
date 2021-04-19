@@ -1,8 +1,0 @@
----
-# defaults file for openhab
-
-openhab:
-    addons:
-        package: "standard"
-    sysconfig:
-        openhab_http_address: "127.0.0.1"

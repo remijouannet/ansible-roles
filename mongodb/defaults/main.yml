@@ -1,6 +1,0 @@
----
-admin_password: "AEuefbzzerb367192azurg"
-mongo_db:
-  - name: "flash-helloworld"
-    user: "user"
-    pass: "GTra56zUoMkE5wDc"

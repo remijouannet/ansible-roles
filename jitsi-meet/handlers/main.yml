@@ -1,5 +1,0 @@
----
-- name: restart jitsi-meet
-  service:
-    name: jitsi-meet
-    state: restarted
