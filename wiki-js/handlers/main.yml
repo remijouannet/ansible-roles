@@ -1,0 +1,13 @@
+---
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+- name: restart wikijs
+  service:
+    name: wikijs
+    state: restarted
+
+- name: "reload postgres"
+  command: /usr/lib/postgresql/11/bin/pg_ctl reload
+  become: yes
+  become_user: postgres

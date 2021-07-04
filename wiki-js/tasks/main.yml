@@ -1,0 +1,106 @@
+---
+# tasks file for wiki-js
+
+- name: Ensure deps are installed
+  apt:
+    name: ['nodejs', 'postgresql-11', 'npm', 'python3-psycopg2', 'python-psycopg2', 'python-ipaddress'] 
+    state: latest 
+    update_cache: yes
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: "Create app database"
+  postgresql_db:
+    state: present
+    name: "wikijs"
+  become: yes
+  become_user: postgres
+
+- name: "Create db user"
+  postgresql_user:
+    state: present
+    name: "wikijs"
+    password: "{{ wikijs.db_password }}"
+  become: yes
+  become_user: postgres
+
+- name: "Grant db user access to app db"
+  postgresql_privs:
+    type: database
+    database: "wikijs"
+    roles: "wikijs"
+    grant_option: no
+    privs: all
+  become: yes
+  become_user: postgres
+
+- name: "Allow md5 connection for the db user"
+  postgresql_pg_hba:
+    dest: "/var/lib/postgresql/11/main/pg_hba.conf"
+    contype: host
+    databases: all
+    method: md5
+    users: "wikijs"
+    create: true
+  become: yes
+  become_user: postgres
+  notify:
+    - reload postgres
+
+
+- name: create wikijs group
+  group:
+    name: wikijs
+    state: present
+
+- name: create wikijs user
+  user:
+    name: wikijs
+    group: wikijs
+    createhome: yes
+    home: /opt/wikijs
+    shell: /sbin/nologin
+    comment: "wikijs User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: wikijs
+    group: wikijs
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/wikijs
+
+- name: download and untar wikijs tarball
+  unarchive:
+    src: "https://github.com/Requarks/wiki/releases/download/{{ wikijs.version }}/wiki-js.tar.gz"
+    dest: /opt/wikijs
+    creates: /opt/wikijs/config.sample.yml
+    owner: wikijs
+    group: wikijs
+    mode: 0711
+    copy: no
+  notify:
+    - restart wikijs
+
+- name: Create Unit file wikijs
+  template:
+    src: wikijs.service.j2
+    dest: /etc/systemd/system/wikijs.service
+    mode: 0640
+  notify:
+    - reload systemctl
+    - restart wikijs
+
+- name: Start wikijs
+  service:
+    name: wikijs.service
+    state: started
+    enabled: yes
