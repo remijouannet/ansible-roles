@@ -77,6 +77,7 @@
     mode: 0740
   with_items:
     - /opt/wikijs
+    - /opt/wikijs/backup
 
 - name: download and untar wikijs tarball
   unarchive:
