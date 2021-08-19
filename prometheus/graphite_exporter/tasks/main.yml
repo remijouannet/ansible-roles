@@ -1,0 +1,79 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name: python-selinux
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: create Prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: create Prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    createhome: yes
+    home: /opt/prometheus
+    shell: /sbin/nologin
+    comment: "Prometheus User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/graphite_exporter
+    - /etc/graphite_exporter
+    - /var/log/graphite_exporter
+    - /var/run/graphite_exporter
+
+
+- name: download mikrotik exporter
+  unarchive:
+    src: https://github.com/prometheus/graphite_exporter/releases/download/v{{ graphite_exporter.version }}/graphite_exporter-{{ graphite_exporter.version }}.linux-amd64.tar.gz
+    dest: /opt/graphite_exporter
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+    copy: no
+  when: ansible_architecture == 'x86_64'
+  notify:
+    - restart graphite_exporter
+
+- name: Create config graphite_exporter
+  template:
+    src: config.yml.j2
+    dest: /opt/graphite_exporter/config.yml
+    owner: prometheus
+    group: prometheus
+    mode: 0640
+  notify:
+    - restart graphite_exporter
+
+- name: Create Unit file graphite_exporter
+  template:
+    src: graphite_exporter.service.j2
+    dest: /etc/systemd/system/graphite_exporter.service
+    mode: 0640
+  notify:
+    - restart graphite_exporter
+    - reload systemctl
+
+- name: Start graphite_exporter
+  service:
+    name: graphite_exporter.service
+    state: started
+    enabled: yes

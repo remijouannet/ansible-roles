@@ -1,0 +1,6 @@
+---
+graphite_exporter:
+  version: 0.10.1
+  config:
+    mappings:
+      - a: "aa"
