@@ -1,0 +1,65 @@
+---
+- name: install libselinux-python binary for Ansible to work
+  yum:
+    name: libselinux-python
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: install libselinux-python binary for Ansible to work
+  apt:
+    name: python-selinux
+    state: present
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- name: create Prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: create Prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    createhome: yes
+    home: /opt/prometheus
+    shell: /sbin/nologin
+    comment: "Prometheus User"
+    state: present
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+    mode: 0740
+  with_items:
+    - /opt/smokeping_prober
+
+- name: download and untar blackbox_exporter tarball
+  unarchive:
+    src: https://github.com/SuperQ/smokeping_prober/releases/download/v{{ smokeping_prober.version }}/smokeping_prober-{{ smokeping_prober.version }}.linux-amd64.tar.gz
+    dest: /opt/smokeping_prober
+    creates: /opt/smokeping_prober/smokeping_prober-{{ smokeping_prober.version }}.linux-amd64/smokeping_prober
+    owner: prometheus
+    group: prometheus
+    mode: 0740
+    copy: no
+  notify:
+    - restart smokeping_prober
+
+- name: Create Unit file smokeping_prober
+  template:
+    src: smokeping_prober.service.j2
+    dest: /etc/systemd/system/smokeping_prober.service
+    mode: 0640
+  notify:
+    - restart smokeping_prober
+    - reload systemctl
+
+- name: Start smokeping_prober
+  service:
+    name: smokeping_prober.service
+    state: started
+    enabled: yes

@@ -1,0 +1,7 @@
+---
+smokeping_prober:
+  version: 0.4.2
+  checksum: sha256:92e615e8c553cd953e7311c4fe1012d8ef308c7ebd007109d1978e92ca62b6e3
+  hosts:
+    - 8.8.8.8
+    - 1.1.1.1
