@@ -55,8 +55,8 @@
     dest: /etc/systemd/system/smokeping_prober.service
     mode: 0640
   notify:
-    - restart smokeping_prober
     - reload systemctl
+    - restart smokeping_prober
 
 - name: Start smokeping_prober
   service:
