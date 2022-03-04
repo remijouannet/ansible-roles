@@ -6,7 +6,14 @@
     name: ['nodejs', 'postgresql-11', 'npm', 'python3-psycopg2', 'python-psycopg2', 'python-ipaddress'] 
     state: latest 
     update_cache: yes
-  when: ansible_distribution in ['Debian', 'Ubuntu']
+  when: ansible_distribution in ['Debian'] and ansible_distribution_major_version <= "10"
+
+- name: Ensure deps are installed
+  apt:
+    name: ['nodejs', 'postgresql-13', 'npm', 'python3-psycopg2', 'python3-ipaddr'] 
+    state: latest 
+    update_cache: yes
+  when: ansible_distribution in ['Debian'] and ansible_distribution_major_version >= "11"
 
 - service:
     name: postgresql
@@ -49,7 +56,23 @@
   become: yes
   become_user: postgres
   notify:
-    - reload postgres
+    - reload postgres11
+  when: ansible_distribution in ['Debian'] and ansible_distribution_major_version <= "10"
+
+
+- name: "Allow md5 connection for the db user"
+  postgresql_pg_hba:
+    dest: "/var/lib/postgresql/13/main/pg_hba.conf"
+    contype: host
+    databases: all
+    method: md5
+    users: "wikijs"
+    create: true
+  become: yes
+  become_user: postgres
+  notify:
+    - reload postgres13
+  when: ansible_distribution in ['Debian'] and ansible_distribution_major_version >= "11"
 
 
 - name: create wikijs group
@@ -77,13 +100,14 @@
     mode: 0740
   with_items:
     - /opt/wikijs
+    - /opt/wikijs/wikijs
     - /opt/wikijs/backup
 
 - name: download and untar wikijs tarball
   unarchive:
     src: "https://github.com/Requarks/wiki/releases/download/{{ wikijs.version }}/wiki-js.tar.gz"
-    dest: /opt/wikijs
-    creates: /opt/wikijs/config.sample.yml
+    dest: /opt/wikijs/wikijs
+    creates: /opt/wikijs/wikijs/config.sample.yml
     owner: wikijs
     group: wikijs
     mode: 0711

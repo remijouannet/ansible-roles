@@ -7,7 +7,12 @@
     name: wikijs
     state: restarted
 
-- name: "reload postgres"
+- name: "reload postgres11"
   command: /usr/lib/postgresql/11/bin/pg_ctl reload
+  become: yes
+  become_user: postgres
+
+- name: "reload postgres13"
+  command: /usr/lib/postgresql/13/bin/pg_ctl reload
   become: yes
   become_user: postgres
