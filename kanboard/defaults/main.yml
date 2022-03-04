@@ -1,0 +1,4 @@
+---
+# defaults file for kanboard
+kanboard:
+  version: 1.2.22

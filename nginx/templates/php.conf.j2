@@ -1,0 +1,113 @@
+{% if item.pem is defined %}
+server {
+    listen {{ item.port_ssl | default("443") }} ssl;
+    server_name {{ item.server_name }};
+    ssl_certificate /etc/nginx/ssl/{{ item.pem }}.crt;
+    ssl_certificate_key /etc/nginx/ssl/{{ item.pem }}.key;
+    index        index.php;
+    root         {{ item.root }};
+
+    location / {
+        {% if item.auth is defined and item.auth %}
+        auth_basic "admin ";
+        auth_basic_user_file /etc/nginx/htpasswd;
+        {% endif %}
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+    
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_index index.php;
+        include fastcgi_params;
+    }
+
+    location ~* ^.+\.(log|sqlite)$ {
+        return 404;
+    }
+
+    location ~ /\.ht {
+        return 404;
+    }
+}
+
+server {
+    listen {{ item.port | default("80") }};
+    server_name {{ item.server_name }};
+    rewrite ^ https://$server_name$request_uri? permanent;
+}
+{% elif item.certbot is defined %}
+server {
+    listen {{ item.port_ssl | default("443") }} ssl;
+    server_name {{ item.server_name }};
+    ssl_certificate /etc/letsencrypt/live/{{ item.certbot }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ item.certbot }}/privkey.pem;
+    index        index.php;
+    root         {{ item.root }};
+
+    location / {
+        {% if item.auth is defined and item.auth %}
+        auth_basic "admin ";
+        auth_basic_user_file /etc/nginx/htpasswd;
+        {% endif %}
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+    
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_index index.php;
+        include fastcgi_params;
+    }
+
+    location ~* ^.+\.(log|sqlite)$ {
+        return 404;
+    }
+
+    location ~ /\.ht {
+        return 404;
+    }
+}
+
+server {
+    listen {{ item.port | default("80") }};
+    server_name {{ item.server_name }};
+    rewrite ^ https://$server_name$request_uri? permanent;
+}
+{% else %}
+server {
+    listen {{ item.port | default("80") }};
+    server_name {{ item.server_name }};
+    index        index.php;
+    root         {{ item.root }};
+
+    location / {
+        {% if item.auth is defined and item.auth %}
+        auth_basic "admin ";
+        auth_basic_user_file /etc/nginx/htpasswd;
+        {% endif %}
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+    
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_index index.php;
+        include fastcgi_params;
+    }
+
+    location ~* ^.+\.(log|sqlite)$ {
+        return 404;
+    }
+
+    location ~ /\.ht {
+        return 404;
+    }
+}
+{% endif %}

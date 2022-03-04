@@ -1,0 +1,18 @@
+---
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+- name: restart kanboard
+  service:
+    name: php-fpm
+    state: restarted
+
+- name: "reload postgres11"
+  command: /usr/lib/postgresql/11/bin/pg_ctl reload
+  become: yes
+  become_user: postgres
+
+- name: "reload postgres13"
+  command: /usr/lib/postgresql/13/bin/pg_ctl reload
+  become: yes
+  become_user: postgres

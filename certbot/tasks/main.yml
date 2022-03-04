@@ -3,7 +3,13 @@
   yum:
     name: ['certbot', 'python2-certbot-dns-ovh']
     state: installed
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
+- name: Ensure certbot is installed
+  apt:
+    name: ['certbot', 'python3-certbot-dns-ovh']
+    state: latest
+  when: ansible_distribution in ['Debian', 'Ubuntu']
 
 - name: push certbot conf
   template:

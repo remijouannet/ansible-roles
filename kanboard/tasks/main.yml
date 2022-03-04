@@ -1,0 +1,82 @@
+---
+# tasks file for kanboard
+
+
+- name: Ensure deps are installed
+  apt:
+    name: ['nodejs', 'postgresql-13', 'npm', 'python3-psycopg2', 'python3-ipaddr', 'php-cli', 'php-mbstring', 'php-sqlite3', 'php-opcache', 'php-json', 'php-ldap', 'php-gd', 'php-xml', 'php-mysql', 'php-pgsql', 'php-curl', 'php-zip', 'php-fpm'] 
+    state: latest 
+    update_cache: yes
+  when: ansible_distribution in ['Debian'] and ansible_distribution_major_version >= "11"
+
+- service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: "Create app database"
+  postgresql_db:
+    state: present
+    name: "kanboard"
+  become: yes
+  become_user: postgres
+
+- name: "Create db user"
+  postgresql_user:
+    state: present
+    name: "kanboard"
+    password: "{{ kanboard.db_password }}"
+  become: yes
+  become_user: postgres
+
+- name: "Grant db user access to app db"
+  postgresql_privs:
+    type: database
+    database: "kanboard"
+    roles: "kanboard"
+    grant_option: no
+    privs: all
+  become: yes
+  become_user: postgres
+
+- name: "Allow md5 connection for the db user"
+  postgresql_pg_hba:
+    dest: "/var/lib/postgresql/13/main/pg_hba.conf"
+    contype: host
+    databases: all
+    method: md5
+    users: "kanboard"
+    create: true
+  become: yes
+  become_user: postgres
+  notify:
+    - reload postgres13
+  when: ansible_distribution in ['Debian'] and ansible_distribution_major_version >= "11"
+
+- name: mkdir for general cases
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    recurse: yes
+    mode: 0755
+  with_items:
+    - /opt/kanboard
+
+- name: download and untar kanboard tarball
+  unarchive:
+    src: "https://github.com/kanboard/kanboard/archive/v{{ kanboard.version }}.tar.gz"
+    dest: /opt/kanboard
+    creates: /opt/kanboard/kanboard/config.default.php
+    owner: www-data
+    group: www-data
+    mode: 0700
+    copy: no
+
+- file:
+    src: /opt/kanboard/kanboard-{{ kanboard.version }}
+    dest: /opt/kanboard/kanboard
+    owner: www-data
+    group: www-data
+    state: link

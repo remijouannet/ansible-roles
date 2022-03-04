@@ -1,4 +1,14 @@
 ---
+- name: Set nginx user
+  set_fact:
+    nginx_user: 'nginx'
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: Set nginx user
+  set_fact:
+    nginx_user: 'www-data'
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
 - name: nginx Add key
   apt_key: 
     url: https://nginx.org/keys/nginx_signing.key
@@ -8,7 +18,7 @@
 
 - name: Repo nginx
   apt_repository:
-    repo: deb http://nginx.org/packages/debian/ jessie nginx
+    repo: "deb http://nginx.org/packages/debian/ {{ ansible_distribution_release | lower }} nginx"
     state: present
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
@@ -36,14 +46,22 @@
   yum:
     name: nginx
     state: installed
-
-- pip:
-    name: passlib
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: Ensure Nginx is installed
   yum:
     name: python2-pip
     state: installed
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
+- name: Ensure Nginx is installed
+  apt:
+    name: python3-pip
+    state: latest
+  when: ansible_distribution in ['Debian', 'Ubuntu']
+
+- pip:
+    name: passlib
 
 - import_tasks: pem.yml
   when: nginx.pem is defined
@@ -118,12 +136,25 @@
     - "{{ nginx.fileserver }}"
   when: nginx.fileserver is defined
 
+- name: Nginx php configuration
+  template:
+    src: php.conf.j2
+    dest: "/etc/nginx/conf.d/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: 0740
+  notify:
+    - restart nginx
+  with_items:
+    - "{{ nginx.php }}"
+  when: nginx.php is defined
+
 - htpasswd:
     path: /etc/nginx/htpasswd
     name: "{{ item.name }}"
     password: "{{ item.password }}"
-    owner: nginx
-    group: nginx
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
     mode: 0600
   with_items:
       - "{{ nginx.htpasswd }}"
