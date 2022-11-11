@@ -1,4 +1,4 @@
 ---
 # tasks file for yum-repo
-- include: nginx.yml
-- include: repo.yml
+- include_tasks: nginx.yml
+- include_tasks: repo.yml
