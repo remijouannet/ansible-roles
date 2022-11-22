@@ -3,7 +3,7 @@
     name: xfsprogs
     update_cache: yes
     state: latest
-  when: filesystem_enable == True
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux'] and filesystem_enable == True
 
 - name: format fs
   filesystem:
